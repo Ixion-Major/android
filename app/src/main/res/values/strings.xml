@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Ixi0n</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">LOG IN</string>
+    <string name="sign_up">SIGN UP</string>
+</resources>
