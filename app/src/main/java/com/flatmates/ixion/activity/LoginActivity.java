@@ -1,4 +1,4 @@
-package com.flatmates.ixion;
+package com.flatmates.ixion.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.flatmates.ixion.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
