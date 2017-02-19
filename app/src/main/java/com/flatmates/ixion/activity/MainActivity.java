@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Unable to register",
                             Toast.LENGTH_SHORT).show();
                     progressdialog.dismiss();
-
                 }
             }
         });
