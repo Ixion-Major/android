@@ -51,7 +51,8 @@
                 android:layout_height="36dp"
                 android:background="@null"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_mic" />
+                android:src="@drawable/ic_mic"
+                android:contentDescription="@string/press_to_speak_input" />
         </LinearLayout>
 
     </LinearLayout>

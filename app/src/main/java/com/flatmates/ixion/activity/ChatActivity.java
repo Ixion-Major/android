@@ -245,7 +245,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putBoolean(IS_USER_ORDER_COMPLETE, true);
                                     editor.apply();
-                                    Realm realm1 = null;
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -268,16 +267,14 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> header = new HashMap<>();
-                header.put("Authorization", preferences.getString(Constants.AUTH_TOKEN, ""));
+                header.put("token", Endpoints.AUTH_TOKEN);
                 return header;
             }
 
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<>();
-//                params.put("userId", preferences.getString(Utils.USER_ID, ""));
                 params.put("userMessage", input);
-//                params.put("token", TOKEN); //TODO: set token
                 return params;
             }
 
