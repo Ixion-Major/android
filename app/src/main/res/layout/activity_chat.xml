@@ -1,0 +1,59 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.flatmates.ixion.activity.ChatActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:id="@+id/scrollview"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/message_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/edittext_user_message"
+                android:hint="@string/input_text"
+                android:textColor="@android:color/black"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"/>
+
+            <ImageButton
+                android:id="@+id/imagebutton_speak"
+                android:layout_width="36dp"
+                android:layout_gravity="center"
+                android:layout_height="36dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_mic" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

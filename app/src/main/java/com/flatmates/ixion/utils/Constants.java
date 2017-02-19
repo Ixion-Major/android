@@ -1,22 +1,14 @@
 package com.flatmates.ixion.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-
 /**
- * Created by gurpreet on 16/02/17.
+ * Created by gurpreet on 19/02/17.
  */
 
 public class Constants {
 
-    public static void hideKeyboard(Context context, Activity activity) {
-        View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+    public static final String IS_USER_ORDER_COMPLETE = "isUserOrderComplete?";
+    public static final String REQUEST_SEND_SPEECH_INPUT_TO_SERVER = "send speech input to server";
+    public static final String AUTH_TOKEN = "token";
+    public static final String USER_MESSAGE = "user_message";
 
 }
