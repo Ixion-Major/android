@@ -24,6 +24,16 @@
                 android:orientation="vertical" />
         </ScrollView>
 
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="auto"
+            android:src="@drawable/ic_next"
+            android:id="@+id/fab_show_results"
+            android:visibility="gone"
+            android:layout_margin="@dimen/margin_medium"
+            android:layout_gravity="bottom|end"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"

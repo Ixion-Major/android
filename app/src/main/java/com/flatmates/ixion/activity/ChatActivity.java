@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -69,6 +70,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     MaterialEditText edittextUserMessage;
     @BindView(R.id.button_send)
     Button buttonSend;
+    @BindView(R.id.fab_show_results)
+    FloatingActionButton fabShowResults;
 
     TextToSpeech tts;
     SharedPreferences preferences;
@@ -142,6 +145,16 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             sendInputToServer(input);
             showUserInputBubble(input);
         }
+    }
+
+
+    @OnClick(R.id.edittext_user_message)
+    public void setFABVisiblityToGone() {
+//        try {
+//            fabShowResults.animate().alpha(0.0f).setDuration(500);
+//        }finally {
+        fabShowResults.setVisibility(View.GONE);
+//        }
     }
 
 
@@ -220,6 +233,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     private void sendInputToServer(final String input) {
+        //TODO: judge here what API endpoint to use
         //send to server for response
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointChatbot(),
@@ -228,7 +242,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     public void onResponse(final String response) {
                         Log.d(TAG, "onResponse: " + response);
                         /**
-                         * example returned JSON
+                         * example returned JSONObject
                          {
                          "area": "Tilak Nagar",
                          "bedrooms": "3bhk",
@@ -241,7 +255,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         try {
                             JSONObject object = new JSONObject(response);
                             if (object.getString("status").equals("1")) {
-                                //TODO: stuff with the extracted information
+                                //TODO: do stuff with the extracted information
 
                                 //save user input to DB
                                 Realm realm = null;
@@ -265,9 +279,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bedrooms = object.getString("bedrooms");
 
                                 edittextUserMessage.setText("");
-
                                 showServerResponseBubble(response);
-
+//                                fabShowResults.animate().alpha(1.0f).setDuration(500);
+                                fabShowResults.setVisibility(View.VISIBLE);
                             } else {
                                 //TODO: remove this toast
                                 Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
@@ -395,6 +409,10 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         switch (item.getItemId()) {
             case R.id.action_logout:
                 logoutUser();
+            case R.id.action_clear_session:
+                clearRealmDB();
+                messageView.setVisibility(View.GONE);
+                messageView.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -419,8 +437,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
-            results.deleteAllFromRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
+                    results.deleteAllFromRealm();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

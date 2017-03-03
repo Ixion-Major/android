@@ -11,4 +11,5 @@
     <string name="send">Send</string>
     <string name="press_to_speak_input">Button to speak your question</string>
     <string name="action_logout">Logout</string>
+    <string name="action_clear_chat">Clear session</string>
 </resources>
