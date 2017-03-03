@@ -76,7 +76,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final String TAG = ChatActivity.class.getSimpleName();
 
-//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE
+//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE,
+//          incorporate other helper endpoints
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -413,6 +414,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
+    //TODO: clear on user wish or when user sees the map
     private void clearRealmDB() {
         Realm realm = null;
         try {
