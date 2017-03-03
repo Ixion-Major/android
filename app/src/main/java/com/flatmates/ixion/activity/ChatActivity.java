@@ -5,14 +5,16 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
@@ -33,6 +35,7 @@ import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
 import com.flatmates.ixion.utils.NetworkConnection;
+import com.google.firebase.auth.FirebaseAuth;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
@@ -48,10 +51,11 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
-        TextToSpeech.OnUtteranceCompletedListener  {
+        TextToSpeech.OnUtteranceCompletedListener {
 
     @BindView(R.id.imagebutton_speak)
     ImageButton imagebuttonSpeak;
@@ -67,8 +71,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final String TAG = ChatActivity.class.getSimpleName();
-    
-    
+
+//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,9 +128,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void onClick(View v) {
                 String inputText = edittextUserMessage.getText().toString().trim();
-                if(inputText.equals(""))
+                if (inputText.equals(""))
                     Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
-                else{
+                else {
                     sendInputToServer(inputText);
                 }
             }
@@ -343,6 +348,52 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (realm != null)
                     realm.close();
             }
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                logoutUser();
+        }
+        return true;
+    }
+
+
+    private void logoutUser() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.getCurrentUser();
+        clearRealmDB();
+        firebaseAuth.signOut();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(IS_USER_LOGGED_IN, false);
+        editor.apply();
+        Toast.makeText(getApplicationContext(), "Logout Successful", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(ChatActivity.this, LoginActivity.class));
+        ChatActivity.this.finish();
+    }
+
+
+    private void clearRealmDB() {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
+            results.deleteAllFromRealm();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (realm != null)
+                realm.close();
         }
     }
 

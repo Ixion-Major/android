@@ -10,5 +10,6 @@ public class Constants {
     public static final String REQUEST_SEND_SPEECH_INPUT_TO_SERVER = "send speech input to server";
 
     public static final String USER_MESSAGE = "user_message";
+    public static final String IS_USER_LOGGED_IN = "is user logged in?";
 
 }
