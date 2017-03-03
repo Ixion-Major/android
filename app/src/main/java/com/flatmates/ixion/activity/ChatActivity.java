@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -69,6 +70,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     MaterialEditText edittextUserMessage;
     @BindView(R.id.button_send)
     Button buttonSend;
+    @BindView(R.id.button_show_results)
+    Button buttonShowResults;
 
     TextToSpeech tts;
     SharedPreferences preferences;
@@ -76,7 +79,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final String TAG = ChatActivity.class.getSimpleName();
 
-//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE
+//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE,
+//          incorporate other helper endpoints
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +146,24 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             showUserInputBubble(input);
         }
     }
+
+
+    @OnClick(R.id.edittext_user_message)
+    public void setFABVisiblityToGone() {
+//        try {
+//            fabShowResults.animate().alpha(0.0f).setDuration(500);
+//        }finally {
+//        buttonShowResults.animate().translationY(buttonShowResults.getHeight());
+        buttonShowResults.setVisibility(View.GONE);
+//        }
+    }
+
+
+    @OnClick(R.id.button_show_results)
+    public void showResults(){
+        //TODO: setup: view map and clear session
+    }
+
 
 
     @Override
@@ -219,15 +241,15 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     private void sendInputToServer(final String input) {
+        //TODO: judge here what API endpoint to use
         //send to server for response
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointChatbot(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
-                        Log.d(TAG, "onResponse: " + response);
                         /**
-                         * example returned JSON
+                         * example returned JSONObject
                          {
                          "area": "Tilak Nagar",
                          "bedrooms": "3bhk",
@@ -240,7 +262,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         try {
                             JSONObject object = new JSONObject(response);
                             if (object.getString("status").equals("1")) {
-                                //TODO: stuff with the extracted information
+                                //TODO: do stuff with the extracted information
 
                                 //save user input to DB
                                 Realm realm = null;
@@ -264,9 +286,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bedrooms = object.getString("bedrooms");
 
                                 edittextUserMessage.setText("");
-
                                 showServerResponseBubble(response);
-
+//                                fabShowResults.animate().alpha(1.0f).setDuration(500);
+                                buttonShowResults.setVisibility(View.VISIBLE);
                             } else {
                                 //TODO: remove this toast
                                 Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
@@ -293,7 +315,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<>();
-                params.put("user_message", input);
+                params.put("user_message", input.toLowerCase());
                 return params;
             }
 
@@ -394,6 +416,10 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         switch (item.getItemId()) {
             case R.id.action_logout:
                 logoutUser();
+            case R.id.action_clear_session:
+                clearRealmDB();
+                messageView.invalidate();
+                //TODO: update messages in real time
         }
         return true;
     }
@@ -413,12 +439,18 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
+    //TODO: clear on user wish or when user sees the map
     private void clearRealmDB() {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
-            results.deleteAllFromRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
+                    results.deleteAllFromRealm();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

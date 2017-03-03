@@ -13,4 +13,20 @@ public class Endpoints {
         return BASE_URL + "/property-bot/chatbot";
     }
 
+    public static String endpointFetchBedrooms() {
+        return BASE_URL + "/property-bot/fetch-bedrooms";
+    }
+
+    public static String endpointFetchCity() {
+        return BASE_URL + "/property-bot/fetch-city";
+    }
+
+    public static String endpointFetchArea() {
+        return BASE_URL + "/property-bot/fetch-area";
+    }
+
+    public static String endpointFetchState() {
+        return BASE_URL + "/property-bot/fetch-state";
+    }
+
 }
