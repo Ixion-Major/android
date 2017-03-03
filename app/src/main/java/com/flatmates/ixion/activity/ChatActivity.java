@@ -5,16 +5,19 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -33,6 +36,7 @@ import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
 import com.flatmates.ixion.utils.NetworkConnection;
+import com.google.firebase.auth.FirebaseAuth;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
@@ -45,13 +49,15 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
-        TextToSpeech.OnUtteranceCompletedListener  {
+        TextToSpeech.OnUtteranceCompletedListener {
 
     @BindView(R.id.imagebutton_speak)
     ImageButton imagebuttonSpeak;
@@ -61,14 +67,17 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ScrollView scrollView;
     @BindView(R.id.edittext_user_message)
     MaterialEditText edittextUserMessage;
+    @BindView(R.id.button_send)
+    Button buttonSend;
 
     TextToSpeech tts;
     SharedPreferences preferences;
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final String TAG = ChatActivity.class.getSimpleName();
-    
-    
+
+//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,18 +128,19 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
             }).show();
         }
-        edittextUserMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String inputText = edittextUserMessage.getText().toString().trim();
-                if(inputText.equals(""))
-                    Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
-                else{
-                    sendInputToServer(inputText);
-                }
-            }
-        });
 
+    }
+
+
+    @OnClick(R.id.button_send)
+    public void sendToServer() {
+        String input = edittextUserMessage.getText().toString().trim();
+        if (input.equals(""))
+            Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
+        else {
+            sendInputToServer(input);
+            showUserInputBubble(input);
+        }
     }
 
 
@@ -215,43 +225,52 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
+                        Log.d(TAG, "onResponse: " + response);
+                        /**
+                         * example returned JSON
+                         {
+                         "area": "Tilak Nagar",
+                         "bedrooms": "3bhk",
+                         "city": null,
+                         "state": "Punjab",
+                         "status": "1"
+                         }
+                         */
+                        String area, bedrooms, city, state;
                         try {
-                            JSONObject object = new JSONObject(response).getJSONObject("data");
-                            Log.i(TAG, "onResponse: " + response);
+                            JSONObject object = new JSONObject(response);
+                            if (object.getString("status").equals("1")) {
+                                //TODO: stuff with the extracted information
 
-                            //save to realm
-                            Realm realm = null;
-                            try {
-                                realm = Realm.getDefaultInstance();
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        UserMessage message = realm.createObject(UserMessage.class);
-                                        message.setMessage(input);
-                                    }
-                                });
-                            } finally {
-                                if (realm != null)
-                                    realm.close();
-                            }
-                            String toSpeak = "";
-                            try {
-                                if (object.getString("order_placed").equals("1")) {
-                                    toSpeak = object.getString("message") + '\n' +
-                                            "Source: " + object.getString("source") + '\n' +
-                                            "Destination: " + object.getString("destination") + '\n' +
-                                            "Airline: " + object.getString("airline") + '\n' +
-                                            "Fare: " + object.getString("fare");
-                                    SharedPreferences.Editor editor = preferences.edit();
-                                    editor.putBoolean(IS_USER_ORDER_COMPLETE, true);
-                                    editor.apply();
+                                //save user input to DB
+                                Realm realm = null;
+                                try {
+                                    realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            UserMessage message = realm.createObject(UserMessage.class);
+                                            message.setMessage(input);
+                                        }
+                                    });
+                                } finally {
+                                    if (realm != null)
+                                        realm.close();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                toSpeak = object.getString("message");
+
+                                area = object.getString("area");
+                                city = object.getString("city");
+                                state = object.getString("state");
+                                bedrooms = object.getString("bedrooms");
+
+                                edittextUserMessage.setText("");
+
+                                showServerResponseBubble(response);
+
+                            } else {
+                                //TODO: remove this toast
+                                Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
                             }
-                            speakOut(toSpeak);
-//                            Log.d(TAG, "onResponse: " + object.getString("message"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -274,7 +293,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<>();
-                params.put("userMessage", input);
+                params.put("user_message", input);
                 return params;
             }
 
@@ -289,6 +308,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
+    //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
 
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
@@ -311,9 +331,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    private void showServerResponseBubble(String textToSpeak) {
+    private void showServerResponseBubble(final String serverResponse) {
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(textToSpeak);
+        serverMessage.setText(serverResponse);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -322,6 +342,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
+
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    UserMessage message = realm.createObject(UserMessage.class);
+                    message.setMessage(serverResponse);
+                }
+            });
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
 
         messageView.addView(serverMessage);
     }
@@ -343,6 +378,52 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (realm != null)
                     realm.close();
             }
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                logoutUser();
+        }
+        return true;
+    }
+
+
+    private void logoutUser() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.getCurrentUser();
+        clearRealmDB();
+        firebaseAuth.signOut();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(IS_USER_LOGGED_IN, false);
+        editor.apply();
+        Toast.makeText(getApplicationContext(), "Logout Successful", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(ChatActivity.this, LoginActivity.class));
+        ChatActivity.this.finish();
+    }
+
+
+    private void clearRealmDB() {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<UserMessage> results = realm.where(UserMessage.class).findAll();
+            results.deleteAllFromRealm();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (realm != null)
+                realm.close();
         }
     }
 

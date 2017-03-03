@@ -10,7 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.flatmates.ixion.activity.MainActivity">
+    tools:context="com.flatmates.ixion.activity.LoginActivity">
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/edittext_email"
@@ -25,6 +25,7 @@
         android:id="@+id/edittext_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textPassword"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:hint="@string/password"
         app:met_floatingLabel="normal" />
@@ -32,17 +33,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button_login"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            style="?buttonBarButtonStyle"
+            android:layout_margin="@dimen/margin_medium"
             android:layout_height="wrap_content"
             android:text="@string/log_in" />
 
         <Button
             android:id="@+id/button_signup"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            style="?buttonBarButtonStyle"
+            android:layout_margin="@dimen/margin_medium"
             android:layout_height="wrap_content"
             android:text="@string/sign_up" />
     </LinearLayout>
