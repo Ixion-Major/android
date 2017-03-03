@@ -240,7 +240,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
-                        Log.d(TAG, "onResponse: " + response);
                         /**
                          * example returned JSONObject
                          {
@@ -308,7 +307,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<>();
-                params.put("user_message", input);
+                params.put("user_message", input.toLowerCase());
                 return params;
             }
 
@@ -411,8 +410,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
-                messageView.setVisibility(View.GONE);
-                messageView.setVisibility(View.VISIBLE);
+                messageView.invalidate();
+                //TODO: update messages in real time
         }
         return true;
     }
