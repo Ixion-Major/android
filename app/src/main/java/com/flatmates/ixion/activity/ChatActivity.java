@@ -70,8 +70,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     MaterialEditText edittextUserMessage;
     @BindView(R.id.button_send)
     Button buttonSend;
-    @BindView(R.id.fab_show_results)
-    FloatingActionButton fabShowResults;
+    @BindView(R.id.button_show_results)
+    Button buttonShowResults;
 
     TextToSpeech tts;
     SharedPreferences preferences;
@@ -153,9 +153,17 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //        try {
 //            fabShowResults.animate().alpha(0.0f).setDuration(500);
 //        }finally {
-        fabShowResults.setVisibility(View.GONE);
+//        buttonShowResults.animate().translationY(buttonShowResults.getHeight());
+        buttonShowResults.setVisibility(View.GONE);
 //        }
     }
+
+
+    @OnClick(R.id.button_show_results)
+    public void showResults(){
+        //TODO: setup: view map and clear session
+    }
+
 
 
     @Override
@@ -280,7 +288,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 edittextUserMessage.setText("");
                                 showServerResponseBubble(response);
 //                                fabShowResults.animate().alpha(1.0f).setDuration(500);
-                                fabShowResults.setVisibility(View.VISIBLE);
+                                buttonShowResults.setVisibility(View.VISIBLE);
                             } else {
                                 //TODO: remove this toast
                                 Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
