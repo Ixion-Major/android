@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -48,6 +49,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -65,6 +67,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ScrollView scrollView;
     @BindView(R.id.edittext_user_message)
     MaterialEditText edittextUserMessage;
+    @BindView(R.id.button_send)
+    Button buttonSend;
 
     TextToSpeech tts;
     SharedPreferences preferences;
@@ -124,18 +128,19 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
             }).show();
         }
-        edittextUserMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String inputText = edittextUserMessage.getText().toString().trim();
-                if (inputText.equals(""))
-                    Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
-                else {
-                    sendInputToServer(inputText);
-                }
-            }
-        });
 
+    }
+
+
+    @OnClick(R.id.button_send)
+    public void sendToServer() {
+        String input = edittextUserMessage.getText().toString().trim();
+        if (input.equals(""))
+            Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
+        else {
+            sendInputToServer(input);
+            showUserInputBubble(input);
+        }
     }
 
 
@@ -220,43 +225,52 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
+                        Log.d(TAG, "onResponse: " + response);
+                        /**
+                         * example returned JSON
+                         {
+                         "area": "Tilak Nagar",
+                         "bedrooms": "3bhk",
+                         "city": null,
+                         "state": "Punjab",
+                         "status": "1"
+                         }
+                         */
+                        String area, bedrooms, city, state;
                         try {
-                            JSONObject object = new JSONObject(response).getJSONObject("data");
-                            Log.i(TAG, "onResponse: " + response);
+                            JSONObject object = new JSONObject(response);
+                            if (object.getString("status").equals("1")) {
+                                //TODO: stuff with the extracted information
 
-                            //save to realm
-                            Realm realm = null;
-                            try {
-                                realm = Realm.getDefaultInstance();
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        UserMessage message = realm.createObject(UserMessage.class);
-                                        message.setMessage(input);
-                                    }
-                                });
-                            } finally {
-                                if (realm != null)
-                                    realm.close();
-                            }
-                            String toSpeak = "";
-                            try {
-                                if (object.getString("order_placed").equals("1")) {
-                                    toSpeak = object.getString("message") + '\n' +
-                                            "Source: " + object.getString("source") + '\n' +
-                                            "Destination: " + object.getString("destination") + '\n' +
-                                            "Airline: " + object.getString("airline") + '\n' +
-                                            "Fare: " + object.getString("fare");
-                                    SharedPreferences.Editor editor = preferences.edit();
-                                    editor.putBoolean(IS_USER_ORDER_COMPLETE, true);
-                                    editor.apply();
+                                //save user input to DB
+                                Realm realm = null;
+                                try {
+                                    realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            UserMessage message = realm.createObject(UserMessage.class);
+                                            message.setMessage(input);
+                                        }
+                                    });
+                                } finally {
+                                    if (realm != null)
+                                        realm.close();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                toSpeak = object.getString("message");
+
+                                area = object.getString("area");
+                                city = object.getString("city");
+                                state = object.getString("state");
+                                bedrooms = object.getString("bedrooms");
+
+                                edittextUserMessage.setText("");
+
+                                showServerResponseBubble(response);
+
+                            } else {
+                                //TODO: remove this toast
+                                Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
                             }
-                            speakOut(toSpeak);
-//                            Log.d(TAG, "onResponse: " + object.getString("message"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -279,7 +293,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<>();
-                params.put("userMessage", input);
+                params.put("user_message", input);
                 return params;
             }
 
@@ -294,6 +308,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
+    //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
 
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
@@ -316,9 +331,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    private void showServerResponseBubble(String textToSpeak) {
+    private void showServerResponseBubble(final String serverResponse) {
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(textToSpeak);
+        serverMessage.setText(serverResponse);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -327,6 +342,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
+
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    UserMessage message = realm.createObject(UserMessage.class);
+                    message.setMessage(serverResponse);
+                }
+            });
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
 
         messageView.addView(serverMessage);
     }

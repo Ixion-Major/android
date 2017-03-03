@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 
@@ -49,27 +50,14 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_main);
             ButterKnife.bind(this);
-
             firebaseauth = FirebaseAuth.getInstance();
-            buttonSignup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    registerUser();
-                }
-            });
-            buttonLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loginUser();
-                }
-            });
             progressdialog = new ProgressDialog(this);
         }
 
     }
 
-
-    private void loginUser() {
+    @OnClick(R.id.button_login)
+    public void loginUser() {
 
         String email = edittextEmail.getText().toString();
         String password = edittextPassword.getText().toString();
@@ -98,8 +86,10 @@ public class LoginActivity extends AppCompatActivity {
                             progressdialog.dismiss();
                             edittextEmail.setText("");
                             edittextPassword.setText("");
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putBoolean(IS_USER_LOGGED_IN, true);
+                            editor.apply();
                             startActivity(new Intent(LoginActivity.this, ChatActivity.class));
-
                         } else {
                             Toast.makeText(getApplicationContext(), "Unable to login",
                                     Toast.LENGTH_SHORT).show();
@@ -110,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-
-    private void registerUser() {
+    @OnClick(R.id.button_signup)
+    public void registerUser() {
         String email = edittextEmail.getText().toString();
         String password = edittextPassword.getText().toString();
 
@@ -135,10 +125,10 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "Registration Successful",
                                     Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putBoolean(IS_USER_LOGGED_IN, true);
                             editor.apply();
+                            startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                             progressdialog.dismiss();
                             edittextEmail.setText("");
                             edittextPassword.setText("");
