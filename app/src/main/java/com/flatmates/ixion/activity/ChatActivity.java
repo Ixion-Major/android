@@ -1,5 +1,6 @@
 package com.flatmates.ixion.activity;
 
+import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -147,14 +148,27 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    @OnClick(R.id.edittext_user_message)
-    public void setFABVisiblityToGone() {
-//        try {
-//            fabShowResults.animate().alpha(0.0f).setDuration(500);
-//        }finally {
-//        buttonShowResults.animate().translationY(buttonShowResults.getHeight());
-        buttonShowResults.setVisibility(View.GONE);
-//        }
+    @OnClick({R.id.edittext_user_message, R.id.imagebutton_speak})
+    public void setFABVisibilityToGone() {
+        buttonShowResults.animate().alpha(0.0f).setDuration(500)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        buttonShowResults.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
     }
 
 
@@ -285,8 +299,25 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                                 edittextUserMessage.setText("");
                                 showServerResponseBubble(response);
-//                                fabShowResults.animate().alpha(1.0f).setDuration(500);
-                                buttonShowResults.setVisibility(View.VISIBLE);
+                                buttonShowResults.animate().alpha(1.0f).setDuration(700)
+                                        .setListener(new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animation) {
+                                                buttonShowResults.setVisibility(View.VISIBLE);
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(Animator animation) {
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animator animation) {
+                                            }
+                                        });
                             } else {
                                 //TODO: remove this toast
                                 Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
