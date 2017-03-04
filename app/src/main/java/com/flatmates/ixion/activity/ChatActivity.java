@@ -1,5 +1,6 @@
 package com.flatmates.ixion.activity;
 
+import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -10,7 +11,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -56,6 +56,11 @@ import io.realm.RealmResults;
 
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
+import static com.flatmates.ixion.utils.Constants.KEY_AREA;
+import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
+import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
         TextToSpeech.OnUtteranceCompletedListener {
@@ -74,6 +79,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Button buttonShowResults;
 
     TextToSpeech tts;
+    Bundle bundle;
     SharedPreferences preferences;
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -148,22 +154,39 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    @OnClick(R.id.edittext_user_message)
-    public void setFABVisiblityToGone() {
-//        try {
-//            fabShowResults.animate().alpha(0.0f).setDuration(500);
-//        }finally {
-//        buttonShowResults.animate().translationY(buttonShowResults.getHeight());
-        buttonShowResults.setVisibility(View.GONE);
-//        }
+    @OnClick({R.id.edittext_user_message, R.id.imagebutton_speak})
+    public void setFABVisibilityToGone() {
+        buttonShowResults.animate().alpha(0.0f).setDuration(500)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        buttonShowResults.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
     }
 
 
     @OnClick(R.id.button_show_results)
-    public void showResults(){
-        //TODO: setup: view map and clear session
+    public void showResults() {
+        //TODO: setup: view map
+        clearRealmDB();
+        messageView.removeAllViews();
+//        Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+//        intent.putExtra(KEY_BUNDLE, bundle);
+//        startActivity(intent);
     }
-
 
 
     @Override
@@ -284,11 +307,33 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 city = object.getString("city");
                                 state = object.getString("state");
                                 bedrooms = object.getString("bedrooms");
+                                bundle = new Bundle();
+                                bundle.putString(KEY_AREA, area);
+                                bundle.putString(KEY_BEDROOMS, bedrooms);
+                                bundle.putString(KEY_CITY, city);
+                                bundle.putString(KEY_STATE, state);
 
                                 edittextUserMessage.setText("");
                                 showServerResponseBubble(response);
-//                                fabShowResults.animate().alpha(1.0f).setDuration(500);
-                                buttonShowResults.setVisibility(View.VISIBLE);
+                                buttonShowResults.animate().alpha(1.0f).setDuration(700)
+                                        .setListener(new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animation) {
+                                                buttonShowResults.setVisibility(View.VISIBLE);
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(Animator animation) {
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animator animation) {
+                                            }
+                                        });
                             } else {
                                 //TODO: remove this toast
                                 Toast.makeText(ChatActivity.this, "status 0", Toast.LENGTH_SHORT).show();
@@ -418,8 +463,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
-                messageView.invalidate();
-                //TODO: update messages in real time
+                messageView.removeAllViews();
         }
         return true;
     }
