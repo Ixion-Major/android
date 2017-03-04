@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -160,10 +159,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     @OnClick(R.id.button_show_results)
-    public void showResults(){
+    public void showResults() {
         //TODO: setup: view map and clear session
     }
-
 
 
     @Override
@@ -418,8 +416,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
-                messageView.invalidate();
-                //TODO: update messages in real time
+                messageView.removeAllViews();
         }
         return true;
     }
