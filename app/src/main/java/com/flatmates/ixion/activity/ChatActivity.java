@@ -56,6 +56,11 @@ import io.realm.RealmResults;
 
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
+import static com.flatmates.ixion.utils.Constants.KEY_AREA;
+import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
+import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
         TextToSpeech.OnUtteranceCompletedListener {
@@ -74,6 +79,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Button buttonShowResults;
 
     TextToSpeech tts;
+    Bundle bundle;
     SharedPreferences preferences;
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -174,7 +180,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @OnClick(R.id.button_show_results)
     public void showResults() {
-        //TODO: setup: view map and clear session
+        //TODO: setup: view map
+        clearRealmDB();
+        messageView.removeAllViews();
+//        Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+//        intent.putExtra(KEY_BUNDLE, bundle);
+//        startActivity(intent);
     }
 
 
@@ -296,6 +307,11 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 city = object.getString("city");
                                 state = object.getString("state");
                                 bedrooms = object.getString("bedrooms");
+                                bundle = new Bundle();
+                                bundle.putString(KEY_AREA, area);
+                                bundle.putString(KEY_BEDROOMS, bedrooms);
+                                bundle.putString(KEY_CITY, city);
+                                bundle.putString(KEY_STATE, state);
 
                                 edittextUserMessage.setText("");
                                 showServerResponseBubble(response);
