@@ -25,33 +25,54 @@
         android:id="@+id/edittext_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:hint="@string/password"
+        android:inputType="textPassword"
         app:met_floatingLabel="normal" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/button_login"
+        style="?buttonBarButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="40dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:text="@string/login_or_signup" />
 
-        <Button
-            android:id="@+id/button_login"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            style="?buttonBarButtonStyle"
-            android:layout_margin="@dimen/margin_medium"
-            android:layout_height="wrap_content"
-            android:text="@string/log_in" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin">
 
-        <Button
-            android:id="@+id/button_signup"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            style="?buttonBarButtonStyle"
+        <View
+            android:layout_width="120dp"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
             android:layout_margin="@dimen/margin_medium"
+            android:layout_toLeftOf="@+id/textview_or_string"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/textview_or_string"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_up" />
-    </LinearLayout>
+            android:layout_centerInParent="true"
+            android:text="@string/or" />
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/margin_medium"
+            android:layout_toRightOf="@+id/textview_or_string"
+            android:background="@android:color/darker_gray" />
+    </RelativeLayout>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/button_google_login"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin" />
+
+    <!--TODO: fb login-->
 </LinearLayout>
