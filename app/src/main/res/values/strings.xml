@@ -13,4 +13,6 @@
     <string name="action_logout">Logout</string>
     <string name="action_clear_chat">Clear session</string>
     <string name="search_property">Search</string>
+    <string name="login_or_signup">SIGN IN</string>
+    <string name="or">OR</string>
 </resources>
