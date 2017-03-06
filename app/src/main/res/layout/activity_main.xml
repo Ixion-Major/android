@@ -75,4 +75,5 @@
         android:layout_marginBottom="@dimen/activity_horizontal_margin" />
 
     <!--TODO: fb login-->
+
 </LinearLayout>
