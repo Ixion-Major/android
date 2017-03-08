@@ -183,9 +183,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //TODO: setup: view map
         clearRealmDB();
         messageView.removeAllViews();
-//        Intent intent = new Intent(ChatActivity.this, MapActivity.class);
-//        intent.putExtra(KEY_BUNDLE, bundle);
-//        startActivity(intent);
+        Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
+        intent.putExtra(KEY_BUNDLE, bundle);
+        startActivity(intent);
     }
 
 
