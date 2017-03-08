@@ -23,6 +23,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -43,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText edittextPassword;
     @BindView(R.id.button_login)
     Button buttonLogin;
+    @BindView(R.id.button_register)
+    Button buttonRegister;
     @BindView(R.id.button_google_login)
     SignInButton buttonGoogleLogin;
     private ProgressDialog progressdialog;
@@ -93,8 +96,8 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.button_login)
     public void loginUser() {
 
-        String email = edittextEmail.getText().toString();
-        String password = edittextPassword.getText().toString();
+        final String email = edittextEmail.getText().toString();
+        final String password = edittextPassword.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Please Enter Email", Toast.LENGTH_SHORT).show();
@@ -106,11 +109,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        progressdialog.setMessage("logging User...");
+        progressdialog.show();
+
         try {
-            progressdialog.setMessage("logging User...");
-            progressdialog.show();
-
-
             firebaseAuth.signInWithEmailAndPassword(email, password).
                     addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -126,18 +128,41 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.apply();
                                 startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                             } else {
-                                Toast.makeText(getApplicationContext(), "Unable to login",
-                                        Toast.LENGTH_SHORT).show();
+                                task.addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 progressdialog.dismiss();
-
                             }
                         }
                     });
         } catch (Exception e) {
-            Log.e(TAG, "loginUser: ", e);
-            progressdialog.setMessage("Registering User...");
-            progressdialog.show();
+            e.printStackTrace();
+        }
+    }
 
+    @OnClick(R.id.button_register)
+    public void registerUser() {
+
+        final String email = edittextEmail.getText().toString();
+        final String password = edittextPassword.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getApplicationContext(), "Please Enter Email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getApplicationContext(), "Please Enter password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressdialog.setMessage("Registering User...");
+        progressdialog.show();
+
+        try {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -153,12 +178,18 @@ public class LoginActivity extends AppCompatActivity {
                                 edittextEmail.setText("");
                                 edittextPassword.setText("");
                             } else {
-                                Toast.makeText(getApplicationContext(), "Unable to register",
-                                        Toast.LENGTH_SHORT).show();
+                                task.addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 progressdialog.dismiss();
                             }
                         }
                     });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -181,6 +212,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 firebaseAuthWithGoogle(acct);
             } else {
+                //TODO: check error
                 // Signed out, show unauthenticated UI.
                 Toast.makeText(this, "Unable to sign in", Toast.LENGTH_SHORT).show();
             }
