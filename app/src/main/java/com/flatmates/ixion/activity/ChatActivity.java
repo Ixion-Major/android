@@ -248,7 +248,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    private void showUserInputBubble(String input) {
+    private void showUserInputBubble(final String input) {
         TextView userMessage = new TextView(ChatActivity.this);
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
@@ -259,6 +259,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    UserMessage message = realm.createObject(UserMessage.class);
+                    message.setMessage(input);
+                    message.setUserSent(true);
+                }
+            });
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
         messageView.addView(userMessage);
     }
 
@@ -286,22 +301,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             JSONObject object = new JSONObject(response);
                             if (object.getString("status").equals("1")) {
                                 //TODO: do stuff with the extracted information
-
-                                //save user input to DB
-                                Realm realm = null;
-                                try {
-                                    realm = Realm.getDefaultInstance();
-                                    realm.executeTransaction(new Realm.Transaction() {
-                                        @Override
-                                        public void execute(Realm realm) {
-                                            UserMessage message = realm.createObject(UserMessage.class);
-                                            message.setMessage(input);
-                                        }
-                                    });
-                                } finally {
-                                    if (realm != null)
-                                        realm.close();
-                                }
 
                                 area = object.getString("area");
                                 city = object.getString("city");
@@ -381,20 +380,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
         showServerResponseBubble(textToSpeak);
 
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    UserMessage message = realm.createObject(UserMessage.class);
-                    message.setMessage(textToSpeak);
-                }
-            });
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
     }
 
 
@@ -418,6 +403,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 public void execute(Realm realm) {
                     UserMessage message = realm.createObject(UserMessage.class);
                     message.setMessage(serverResponse);
+                    message.setUserSent(false);
                 }
             });
         } finally {
@@ -436,7 +422,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 realm = Realm.getDefaultInstance();
                 RealmResults<UserMessage> messages = realm.where(UserMessage.class).findAll();
                 for (int i = 0; i < messages.size(); i++) {
-                    if (i % 2 == 0)
+                    if(messages.get(i).isUserSent())
                         showUserInputBubble(messages.get(i).getMessage());
                     else
                         showServerResponseBubble(messages.get(i).getMessage());
