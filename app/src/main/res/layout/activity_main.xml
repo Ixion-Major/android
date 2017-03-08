@@ -30,13 +30,29 @@
         android:inputType="textPassword"
         app:met_floatingLabel="normal" />
 
-    <Button
-        android:id="@+id/button_login"
-        style="?buttonBarButtonStyle"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:text="@string/login_or_signup" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_login"
+            style="?buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:text="@string/login_or_signup" />
+
+        <Button
+            android:id="@+id/button_register"
+            style="?buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:text="@string/sign_up" />
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
