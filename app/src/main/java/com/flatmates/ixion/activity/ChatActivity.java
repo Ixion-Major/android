@@ -91,6 +91,10 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //TODO: show empty view
+//        if (messageView.getChildAt(0) == null) {
+//            setContentView(R.layout.layout_empty_view);
+//        } else {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
 
@@ -138,6 +142,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
             }).show();
         }
+//        }
 
     }
 
@@ -148,6 +153,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (input.equals(""))
             Toast.makeText(ChatActivity.this, "Enter some query", Toast.LENGTH_SHORT).show();
         else {
+            edittextUserMessage.setText("");
             sendInputToServer(input);
             showUserInputBubble(input);
         }
@@ -259,6 +265,15 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
+
+        messageView.addView(userMessage);
+    }
+
+
+    private void sendInputToServer(final String input) {
+        //TODO: judge here what API endpoint to use
+        //store in db and send to server for response
+
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
@@ -274,18 +289,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             if (realm != null)
                 realm.close();
         }
-        messageView.addView(userMessage);
-    }
 
-
-    private void sendInputToServer(final String input) {
-        //TODO: judge here what API endpoint to use
-        //send to server for response
+        //TODO: ask for all info
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointChatbot(),
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(final String response) {
+                    public void onResponse(final String serverResponse) {
                         /**
                          * example returned JSONObject
                          {
@@ -298,7 +308,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                          */
                         String area, bedrooms, city, state;
                         try {
-                            JSONObject object = new JSONObject(response);
+                            JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
                                 //TODO: do stuff with the extracted information
 
@@ -312,8 +322,23 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
 
-                                edittextUserMessage.setText("");
-                                showServerResponseBubble(response);
+                                Realm realm = null;
+                                try {
+                                    realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            UserMessage message = realm.createObject(UserMessage.class);
+                                            message.setMessage(serverResponse);
+                                            message.setUserSent(false);
+                                        }
+                                    });
+                                } finally {
+                                    if (realm != null)
+                                        realm.close();
+                                }
+
+                                showServerResponseBubble(serverResponse);
                                 buttonShowResults.animate().alpha(1.0f).setDuration(700)
                                         .setListener(new Animator.AnimatorListener() {
                                             @Override
@@ -395,22 +420,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
 
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    UserMessage message = realm.createObject(UserMessage.class);
-                    message.setMessage(serverResponse);
-                    message.setUserSent(false);
-                }
-            });
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-
         messageView.addView(serverMessage);
     }
 
@@ -422,7 +431,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 realm = Realm.getDefaultInstance();
                 RealmResults<UserMessage> messages = realm.where(UserMessage.class).findAll();
                 for (int i = 0; i < messages.size(); i++) {
-                    if(messages.get(i).isUserSent())
+                    if (messages.get(i).isUserSent())
                         showUserInputBubble(messages.get(i).getMessage());
                     else
                         showServerResponseBubble(messages.get(i).getMessage());
