@@ -54,6 +54,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static android.view.View.GONE;
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
@@ -170,7 +171,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        buttonShowResults.setVisibility(View.GONE);
+                        buttonShowResults.setVisibility(GONE);
                     }
 
                     @Override
@@ -189,9 +190,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //TODO: setup: view map
         clearRealmDB();
         messageView.removeAllViews();
-//        Intent intent = new Intent(ChatActivity.this, MapActivity.class);
-//        intent.putExtra(KEY_BUNDLE, bundle);
-//        startActivity(intent);
+        Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
+        intent.putExtra(KEY_BUNDLE, bundle);
+        startActivity(intent);
     }
 
 
@@ -259,6 +260,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
+//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_buuble));
         userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -321,6 +323,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
+                                //TODO: remove
 
                                 Realm realm = null;
                                 try {
@@ -458,6 +461,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
+                buttonShowResults.setVisibility(GONE);
                 messageView.removeAllViews();
         }
         return true;
@@ -542,4 +546,5 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
     }
+
 }

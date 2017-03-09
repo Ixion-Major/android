@@ -48,7 +48,8 @@
                 android:layout_marginEnd="@dimen/margin_medium"
                 android:contentDescription="@string/press_to_speak_input"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_mic" />
+                android:src="@drawable/ic_mic"
+                android:layout_marginRight="@dimen/margin_medium" />
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/edittext_user_message"
