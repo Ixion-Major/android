@@ -16,4 +16,12 @@
     <string name="login_or_signup">SIGN IN</string>
     <string name="or">OR</string>
     <string name="title_activity_maps">Map</string>
+
+
+    <!--Rough Data-->
+    <string name="owner_name">Owner name: Natwarlal</string>
+    <string name="address">Address: Abc colony, Delhi</string>
+    <string name="number_of_rooms">Number of Rooms: 3</string>
+    <string name="rent">Rent: Rs. 20,000</string>
+
 </resources>

@@ -253,6 +253,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
+//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_buuble));
         userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
