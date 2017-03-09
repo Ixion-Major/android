@@ -1,9 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true"
     tools:context="com.flatmates.ixion.activity.ChatActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,8 +12,8 @@
         android:orientation="vertical">
 
         <ScrollView
-            android:layout_width="match_parent"
             android:id="@+id/scrollview"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
@@ -26,45 +25,47 @@
         </ScrollView>
 
         <Button
+            android:id="@+id/button_show_results"
+            style="?buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/search_property"
-            style="?buttonBarButtonStyle"
-            android:visibility="gone"
-            android:id="@+id/button_show_results"
+            android:layout_gravity="center"
             android:layout_margin="@dimen/margin_medium"
-            android:layout_gravity="center"/>
+            android:text="@string/search_property"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:orientation="horizontal">
 
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:id="@+id/edittext_user_message"
-                android:hint="@string/input_text"
-                android:textColor="@android:color/black"
-                android:layout_height="match_parent" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/send"
-                android:id="@+id/button_send"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center"/>
-
             <ImageButton
                 android:id="@+id/imagebutton_speak"
                 android:layout_width="36dp"
-                android:layout_gravity="center"
                 android:layout_height="36dp"
+                android:layout_gravity="center"
                 android:background="@null"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:contentDescription="@string/press_to_speak_input"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_mic"
-                android:contentDescription="@string/press_to_speak_input" />
+                android:src="@drawable/ic_mic" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edittext_user_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/input_text"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/button_send"
+                style="?buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/send" />
+
         </LinearLayout>
 
     </LinearLayout>
