@@ -3,13 +3,17 @@ package com.flatmates.ixion.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
 import android.text.TextUtils;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
-import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -48,6 +52,8 @@ public class LoginActivity extends AppCompatActivity {
     Button buttonRegister;
     @BindView(R.id.button_google_login)
     SignInButton buttonGoogleLogin;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private ProgressDialog progressdialog;
     private FirebaseAuth firebaseAuth;
     private SharedPreferences preferences;
@@ -67,7 +73,14 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, ChatActivity.class));
         } else {
             setContentView(R.layout.activity_main);
+            setSupportActionBar(toolbar);
             ButterKnife.bind(this);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                this.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+
+            edittextPassword.setTextColor(getResources().getColor(android.R.color.white));
+            edittextEmail.setTextColor(getResources().getColor(android.R.color.white));
 
             googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))

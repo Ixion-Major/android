@@ -9,6 +9,7 @@ import io.realm.RealmObject;
 public class UserMessage extends RealmObject {
 
     private String message;
+    private boolean isUserSent;
 
 
     public String getMessage() {
@@ -18,4 +19,13 @@ public class UserMessage extends RealmObject {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public boolean isUserSent() {
+        return isUserSent;
+    }
+
+    public void setUserSent(boolean userSent) {
+        isUserSent = userSent;
+    }
+
 }
