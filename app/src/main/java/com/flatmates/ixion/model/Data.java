@@ -1,13 +1,11 @@
 package com.flatmates.ixion.model;
 
-import io.realm.Realm;
-import io.realm.RealmObject;
 
 /**
  * Created by daman on 8/3/17.
  */
 
-public class Data extends RealmObject {
+public class Data {
 
     String lat;
     String lon;
@@ -15,10 +13,10 @@ public class Data extends RealmObject {
     public Data(){
     }
 
-    public Data(String lat, String lon) {
-        this.lat = lat;
-        this.lon = lon;
-    }
+//    public Data(String lat, String lon) {
+//        this.lat = lat;
+//        this.lon = lon;
+//    }
 
     public String getLat() {
         return lat;

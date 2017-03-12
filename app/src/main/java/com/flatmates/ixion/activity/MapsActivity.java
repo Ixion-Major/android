@@ -42,6 +42,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double lat;
     double lon;
 
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRefData = database.getReference("Data");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +53,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
-        area = bundle.getString(KEY_AREA);
-        bedrooms = bundle.getString(KEY_BEDROOMS);
-        city = bundle.getString(KEY_CITY);
-        state = bundle.getString(KEY_STATE);
+//
+//        Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
+//        area = bundle.getString(KEY_AREA);
+//        bedrooms = bundle.getString(KEY_BEDROOMS);
+//        city = bundle.getString(KEY_CITY);
+//        state = bundle.getString(KEY_STATE);
     }
 
 
@@ -73,42 +75,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
-        if (state.toLowerCase().matches("delhi") || city.toLowerCase().matches("delhi")) {
-            lat = 28.648669;
-            lon = 77.061945;
-            LatLng sydney = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(sydney).title(lat + "  " + lon));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10.0f));
 
-            lat = 28.778669;
-            lon = 77.111945;
-            LatLng sydney2 = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(sydney2).title(lat + "  " + lon));
-
-            lat = 28.578669;
-            lon = 76.921945;
-            LatLng sydney3 = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(sydney3).title(lat + "  " + lon));
-
-            lat = 28.818669;
-            lon = 77.1601945;
-            LatLng sydney4 = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(sydney4).title(lat + "  " + lon));
-
-            lat = 28.775362;
-            lon = 77.041945;
-            LatLng sydney5 = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(sydney5).title(lat + "  " + lon));
-
-        }
-
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        myRefData.addValueEventListener(new ValueEventListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
-                startActivity(intent);
-                return false;
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Data data = snapshot.getValue(Data.class);
+                    lat = Double.parseDouble(data.getLat());
+                    lon = Double.parseDouble(data.getLon());
+                    LatLng apna = new LatLng(lat,lon);
+                    mMap.addMarker(new MarkerOptions().position(apna).title(lat + "   " + lon));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("MainActivity", databaseError.getDetails());
             }
         });
     }
