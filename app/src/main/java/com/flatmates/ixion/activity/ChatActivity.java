@@ -54,6 +54,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static android.view.View.GONE;
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
@@ -170,7 +171,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        buttonShowResults.setVisibility(View.GONE);
+                        buttonShowResults.setVisibility(GONE);
                     }
 
                     @Override
@@ -322,6 +323,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
+                                //TODO: remove
 
                                 Realm realm = null;
                                 try {
@@ -459,6 +461,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
+                buttonShowResults.setVisibility(GONE);
                 messageView.removeAllViews();
         }
         return true;
@@ -543,4 +546,5 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
     }
+
 }

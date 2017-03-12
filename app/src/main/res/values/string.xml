@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ixion</string>
+    <string name="app_name">FLATMATE</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="log_in">LOG IN</string>
@@ -15,6 +15,9 @@
     <string name="search_property">Search</string>
     <string name="login_or_signup">SIGN IN</string>
     <string name="or">OR</string>
+<<<<<<< Temporary merge branch 1
+    <string name="empty_view">Strike a conversation!</string>
+=======
     <string name="title_activity_maps">Map</string>
 
 
@@ -24,4 +27,5 @@
     <string name="number_of_rooms">Number of Rooms: 3</string>
     <string name="rent">Rent: Rs. 20,000</string>
 
+>>>>>>> Temporary merge branch 2
 </resources>
