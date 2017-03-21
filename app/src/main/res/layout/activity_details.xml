@@ -12,24 +12,28 @@
     tools:context="com.flatmates.ixion.activity.DetailsActivity">
 
     <TextView
+        android:id="@+id/city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/owner_name"
         style="@style/DetailsText"/>
 
     <TextView
+        android:id="@+id/area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/address"
         style="@style/DetailsText"/>
 
     <TextView
+        android:id="@+id/bhk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/number_of_rooms"
         style="@style/DetailsText"/>
 
     <TextView
+        android:id="@+id/state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/rent"

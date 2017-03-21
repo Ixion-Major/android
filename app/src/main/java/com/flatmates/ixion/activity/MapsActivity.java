@@ -31,6 +31,7 @@ import io.realm.RealmResults;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
@@ -84,22 +85,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
                 double lon = marker.getPosition().longitude;
-                Query recentPostsQuery = myRefData.orderByChild("lon").equalTo(lon);
+                Query recentPostsQuery = myRefData.orderByChild("lon").equalTo(String.valueOf(lon));
                 recentPostsQuery.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Data data = snapshot.getValue(Data.class);
 
-//                            String email = data.getEmail();
-//                            String locality = data.getLocality();
-//                            int rent = data.getRent();
-//                            int noofrooms = data.getNoOfRooms();
-//                            new AlertDialog.Builder(MapsActivity.this)
-//                                    .setTitle("Information")
-//                                    .setMessage("Name: " + name + "\nRent: " + rent + "\nContact: " + email +
-//                                            "\nLocality: " + locality + "\nSize: " + noofrooms + "bhk")
-//                                    .show();
+                            String area = data.getArea();
+                            String bhk = data.getBhk();
+                            String rent = data.getRent();
+                            String city = data.getCity();
+                            String state = data.getState();
+                            new AlertDialog.Builder(MapsActivity.this)
+                                    .setTitle("Information")
+                                    .setMessage("Area: " + area + "\nRent: " + rent + "\nCity: " + city +
+                                            "\nState: " + state + "\nSize: " + bhk)
+                                    .show();
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString(KEY_AREA, area);
+                            bundle.putString(KEY_BEDROOMS, bhk);
+                            bundle.putString(KEY_CITY, city);
+                            bundle.putString(KEY_STATE, state);
+                            Intent intent = new Intent(MapsActivity.this,DetailsActivity.class);
+                            intent.putExtra(KEY_BUNDLE, bundle);
+                            startActivity(intent);
                         }
                     }
 

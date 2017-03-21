@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @BindView(R.id.edittext_user_message)
     MaterialEditText edittextUserMessage;
     @BindView(R.id.button_send)
-    Button buttonSend;
+    ImageButton buttonSend;
     @BindView(R.id.button_show_results)
     Button buttonShowResults;
 
@@ -260,12 +261,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
-//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_buuble));
-        userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        userMessage.setTextColor(getResources().getColor(android.R.color.black));
+//        userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_bubble));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        llp.setMargins(100, 20, 50, 20); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
         messageView.addView(userMessage);
@@ -420,7 +421,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(50, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
