@@ -7,6 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.facebook.stetho.Stetho;
+import com.sendbird.android.SendBird;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.realm.Realm;
@@ -28,6 +29,8 @@ public class InitApplication extends Application {
         super.onCreate();
 
         sInstance = this;
+
+        SendBird.init(BuildConfig.SENDBIRD_APP_ID, getApplicationContext());
 
         //TODO: remove
 //        Stetho.initializeWithDefaults(this);
