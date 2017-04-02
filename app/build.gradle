@@ -6,7 +6,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.flatmates.ixion"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -21,24 +21,32 @@ android {
 }
 
 dependencies {
-    compile'com.google.firebase:firebase-auth:10.0.1'
+    
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    
+    compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.android.support:design:25.1.1'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.facebook.stetho:stetho:1.4.2'
     compile 'com.google.android.gms:play-services-auth:10.0.1'
-
     compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.google.android.gms:play-services:10.0.1'
+    compile 'com.google.vr:sdk-audio:1.10.0'
+    compile 'com.google.vr:sdk-base:1.10.0'
+    compile 'com.google.vr:sdk-common:1.10.0'
+    compile 'com.google.vr:sdk-commonwidget:1.10.0'
+    compile 'com.google.vr:sdk-panowidget:1.10.0'
+    compile 'com.google.vr:sdk-videowidget:1.10.0'
     testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 
 

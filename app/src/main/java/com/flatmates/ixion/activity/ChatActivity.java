@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -54,6 +55,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static android.view.View.GONE;
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
@@ -74,7 +76,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @BindView(R.id.edittext_user_message)
     MaterialEditText edittextUserMessage;
     @BindView(R.id.button_send)
-    Button buttonSend;
+    ImageButton buttonSend;
     @BindView(R.id.button_show_results)
     Button buttonShowResults;
 
@@ -170,7 +172,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        buttonShowResults.setVisibility(View.GONE);
+                        buttonShowResults.setVisibility(GONE);
                     }
 
                     @Override
@@ -189,9 +191,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //TODO: setup: view map
         clearRealmDB();
         messageView.removeAllViews();
-//        Intent intent = new Intent(ChatActivity.this, MapActivity.class);
-//        intent.putExtra(KEY_BUNDLE, bundle);
-//        startActivity(intent);
+        Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
+        intent.putExtra(KEY_BUNDLE, bundle);
+        startActivity(intent);
     }
 
 
@@ -259,11 +261,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
-        userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        userMessage.setTextColor(getResources().getColor(android.R.color.black));
+//        userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_bubble));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        llp.setMargins(100, 20, 50, 20); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
         messageView.addView(userMessage);
@@ -321,6 +324,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
+                                //TODO: remove
 
                                 Realm realm = null;
                                 try {
@@ -417,7 +421,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(50, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
@@ -458,6 +462,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
+                buttonShowResults.setVisibility(GONE);
                 messageView.removeAllViews();
         }
         return true;
@@ -542,4 +547,5 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
     }
+
 }

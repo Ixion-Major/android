@@ -9,11 +9,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
 import android.text.TextUtils;
-import android.text.style.BackgroundColorSpan;
 import android.util.Log;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -103,14 +100,14 @@ public class LoginActivity extends AppCompatActivity {
             //TODO: DAMAN: facebook login https://firebase.google.com/docs/auth/android/facebook-login
 
         }
-
     }
+
 
     @OnClick(R.id.button_login)
     public void loginUser() {
 
-        final String email = edittextEmail.getText().toString();
-        final String password = edittextPassword.getText().toString();
+        final String email = edittextEmail.getText().toString().trim();
+        final String password = edittextPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Please Enter Email", Toast.LENGTH_SHORT).show();
@@ -147,20 +144,21 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                progressdialog.dismiss();
                             }
                         }
                     });
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            progressdialog.dismiss();
         }
     }
 
     @OnClick(R.id.button_register)
     public void registerUser() {
 
-        final String email = edittextEmail.getText().toString();
-        final String password = edittextPassword.getText().toString();
+        final String email = edittextEmail.getText().toString().trim();
+        final String password = edittextPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Please Enter Email", Toast.LENGTH_SHORT).show();
@@ -197,12 +195,13 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                progressdialog.dismiss();
                             }
                         }
                     });
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            progressdialog.dismiss();
         }
     }
 
