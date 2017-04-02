@@ -14,9 +14,14 @@ import com.google.vr.sdk.widgets.pano.VrPanoramaView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
+import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
+import static com.flatmates.ixion.utils.Constants.KEY_NAME;
+import static com.flatmates.ixion.utils.Constants.KEY_RENT;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -35,7 +40,7 @@ public class DetailsActivity extends AppCompatActivity {
     String bhk;
     String city;
     String state;
-    String rent;
+    String rent, name, email, mobile, address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +54,16 @@ public class DetailsActivity extends AppCompatActivity {
         bhk = bundle.getString(KEY_BEDROOMS);
         city = bundle.getString(KEY_CITY).toLowerCase();
         state = bundle.getString(KEY_STATE).toLowerCase();
+        rent = bundle.getString(KEY_RENT);
+        name = bundle.getString(KEY_NAME);
+        email = bundle.getString(KEY_EMAIL);
+        mobile = bundle.getString(KEY_MOBILE);
+        address = bundle.getString(KEY_ADDRESS);
 
         new AlertDialog.Builder(this)
                 .setTitle("Information")
                 .setMessage("Area: " + area + "\nRent: " + rent + "\nCity: " + city +
-                        "\nState: " + state + "\nSize: " + bhk)
+                        "\nState: " + state + "\nSize: " + bhk +name+email+mobile+address)
                 .show();
 
         txt_area.setText(area);
