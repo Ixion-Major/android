@@ -29,10 +29,15 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
+import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
+import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
+import static com.flatmates.ixion.utils.Constants.KEY_NAME;
+import static com.flatmates.ixion.utils.Constants.KEY_RENT;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -64,12 +69,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         city = bundle.getString(KEY_CITY).toLowerCase();
         state = bundle.getString(KEY_STATE).toLowerCase();
 
+        fetchData();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        fetchData();
     }
 
     @Override
@@ -97,17 +103,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String rent = data.getRent();
                             String city = data.getCity();
                             String state = data.getState();
-                            new AlertDialog.Builder(MapsActivity.this)
-                                    .setTitle("Information")
-                                    .setMessage("Area: " + area + "\nRent: " + rent + "\nCity: " + city +
-                                            "\nState: " + state + "\nSize: " + bhk)
-                                    .show();
+                            String name = data.getName();
+                            String email = data.getEmail();
+                            String mobile = data.getMobile();
+                            String address = data.getAddress();
 
                             Bundle bundle = new Bundle();
                             bundle.putString(KEY_AREA, area);
                             bundle.putString(KEY_BEDROOMS, bhk);
                             bundle.putString(KEY_CITY, city);
                             bundle.putString(KEY_STATE, state);
+                            bundle.putString(KEY_NAME, name);
+                            bundle.putString(KEY_ADDRESS, address);
+                            bundle.putString(KEY_MOBILE, mobile);
+                            bundle.putString(KEY_EMAIL, email);
+                            bundle.putString(KEY_RENT, rent);
                             Intent intent = new Intent(MapsActivity.this,DetailsActivity.class);
                             intent.putExtra(KEY_BUNDLE, bundle);
                             startActivity(intent);

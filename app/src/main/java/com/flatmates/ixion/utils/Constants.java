@@ -18,4 +18,10 @@ public class Constants {
     public static final String KEY_STATE = "state";
     public static final String KEY_BUNDLE = "bundle";
 
+    public static final String KEY_NAME= "name";
+    public static final String KEY_MOBILE = "mobile";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_ADDRESS = "address";
+    public static final String KEY_RENT = "rent";
+
 }
