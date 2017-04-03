@@ -36,6 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
+import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -135,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                                 edittextPassword.setText("");
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putBoolean(IS_USER_LOGGED_IN, true);
+                                editor.putString(USER_EMAIL, email);
                                 editor.apply();
                                 startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                             } else {
@@ -149,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             progressdialog.dismiss();
         }
     }
@@ -183,6 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putBoolean(IS_USER_LOGGED_IN, true);
+                                editor.putString(USER_EMAIL, email);
                                 editor.apply();
                                 startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                                 progressdialog.dismiss();
@@ -200,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             progressdialog.dismiss();
         }
     }
@@ -231,7 +234,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -253,6 +256,7 @@ public class LoginActivity extends AppCompatActivity {
                             edittextPassword.setText("");
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putBoolean(IS_USER_LOGGED_IN, true);
+                            editor.putString(USER_EMAIL, acct.getEmail());
                             editor.apply();
                             startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                         }
