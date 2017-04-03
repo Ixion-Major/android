@@ -26,25 +26,16 @@ import java.io.InputStream;
  */
 
 public class VRActivity extends Activity {
-    private static final String TAG = VRActivity.class.getSimpleName();
-    /** Actual panorama widget. **/
+
     private VrPanoramaView panoWidgetView;
-    /**
-     * Arbitrary variable to track load status. In this example, this variable should only be accessed
-     * on the UI thread. In a real app, this variable would be code that performs some UI actions when
-     * the panorama is fully loaded.
-     */
     public boolean loadImageSuccessful;
-    /** Tracks the file to be loaded across the lifetime of this app. **/
     private Uri fileUri;
-    /** Configuration information for the panorama. **/
     private VrPanoramaView.Options panoOptions = new VrPanoramaView.Options();
     private ImageLoaderTask backgroundImageLoaderTask;
 
-    /**
-     * Called when the app is launched via the app icon or an intent using the adb command above. This
-     * initializes the app and loads the image to render.
-     */
+    private static final String TAG = VRActivity.class.getSimpleName();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
