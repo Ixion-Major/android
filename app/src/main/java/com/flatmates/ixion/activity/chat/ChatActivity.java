@@ -1,4 +1,4 @@
-package com.flatmates.ixion.activity;
+package com.flatmates.ixion.activity.chat;
 
 import android.animation.Animator;
 import android.app.AlertDialog;
@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -34,6 +33,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.LoginActivity;
+import com.flatmates.ixion.activity.MapsActivity;
 import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
@@ -108,7 +109,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
                         Settings.Secure.ENABLED_INPUT_METHODS);
 
-        /**
+        /*
          * If voice search is enabled, show UI, else
          * show dialog with info to turn on voice search
          */
@@ -188,7 +189,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @OnClick(R.id.button_show_results)
     public void showResults() {
-        //TODO: setup: view map
         clearRealmDB();
         messageView.removeAllViews();
         Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
@@ -200,6 +200,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     public void onStart() {
         super.onStart();
+        buttonShowResults.setVisibility(GONE);
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -261,12 +262,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
-        userMessage.setTextColor(getResources().getColor(android.R.color.black));
-//        userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_bubble));
+//        userMessage.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
+        userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-        llp.setMargins(100, 20, 50, 20); // llp.setMargins(left, top, right, bottom);
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+        llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
         messageView.addView(userMessage);
@@ -299,16 +301,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String serverResponse) {
-                        /**
-                         * example returned JSONObject
-                         {
-                         "area": "Tilak Nagar",
-                         "bedrooms": "3bhk",
-                         "city": null,
-                         "state": "Punjab",
-                         "status": "1"
-                         }
-                         */
                         String area, bedrooms, city, state;
                         try {
                             JSONObject object = new JSONObject(serverResponse);
@@ -421,7 +413,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(50, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
@@ -444,6 +436,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (realm != null)
                     realm.close();
             }
+        } else{
+            showServerResponseBubble("Hi! How may I help you?");
         }
     }
 
@@ -483,7 +477,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    //TODO: clear on user wish or when user sees the map
     private void clearRealmDB() {
         Realm realm = null;
         try {

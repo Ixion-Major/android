@@ -1,6 +1,5 @@
 package com.flatmates.ixion.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -15,14 +14,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.chat.ChatActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -52,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
     SignInButton buttonGoogleLogin;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private ProgressDialog progressdialog;
     private FirebaseAuth firebaseAuth;
     private SharedPreferences preferences;
     GoogleSignInOptions googleSignInOptions;
@@ -81,7 +83,8 @@ public class LoginActivity extends AppCompatActivity {
             edittextEmail.setTextColor(getResources().getColor(android.R.color.white));
 
             googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
+                    //http://stackoverflow.com/questions/33583326/new-google-sign-in-android/37657942#37657942
+                    .requestIdToken("505633584744-o3k847illsha7ts03p61qml6i1odpfsp.apps.googleusercontent.com")  //TODO: issue here, web OAuth
                     .requestEmail()
                     .build();
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -95,10 +98,8 @@ public class LoginActivity extends AppCompatActivity {
                     .build();
 
             firebaseAuth = FirebaseAuth.getInstance();
-            progressdialog = new ProgressDialog(this);
 
             buttonGoogleLogin.setSize(SignInButton.SIZE_WIDE);
-            //TODO: DAMAN: facebook login https://firebase.google.com/docs/auth/android/facebook-login
 
         }
     }
@@ -120,9 +121,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        progressdialog.setMessage("logging User...");
-        progressdialog.show();
-
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .content(R.string.logging_in)
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        progressDialog.show();
         try {
             firebaseAuth.signInWithEmailAndPassword(email, password).
                     addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -131,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Toast.makeText(getApplicationContext(), "login Successful",
                                         Toast.LENGTH_SHORT).show();
-                                progressdialog.dismiss();
+                                progressDialog.dismiss();
                                 edittextEmail.setText("");
                                 edittextPassword.setText("");
                                 SharedPreferences.Editor editor = preferences.edit();
@@ -152,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            progressdialog.dismiss();
+            progressDialog.dismiss();
         }
     }
 
@@ -172,8 +176,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        progressdialog.setMessage("Registering User...");
-        progressdialog.show();
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .content(R.string.registering_user)
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        progressDialog.show();
 
         try {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -188,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString(USER_EMAIL, email);
                                 editor.apply();
                                 startActivity(new Intent(LoginActivity.this, ChatActivity.class));
-                                progressdialog.dismiss();
+                                progressDialog.dismiss();
                                 edittextEmail.setText("");
                                 edittextPassword.setText("");
                             } else {
@@ -204,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            progressdialog.dismiss();
+            progressDialog.dismiss();
         }
     }
 
@@ -227,8 +235,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 firebaseAuthWithGoogle(acct);
             } else {
-                //TODO: check error
-                // Signed out, show unauthenticated UI.
+                Log.e(TAG, "onActivityResult: GoogleSignIn failed: " + result.getStatus());
                 Toast.makeText(this, "Unable to sign in", Toast.LENGTH_SHORT).show();
             }
         }
@@ -245,13 +252,12 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Unable to sign in",
+                            Log.e(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(LoginActivity.this, "Couldn't sign in",
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(getApplicationContext(), "Sign in Successful",
                                     Toast.LENGTH_SHORT).show();
-                            progressdialog.dismiss();
                             edittextEmail.setText("");
                             edittextPassword.setText("");
                             SharedPreferences.Editor editor = preferences.edit();
@@ -265,4 +271,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
 }

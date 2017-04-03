@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.ChatActivity" />
+        <activity android:name=".activity.chat.ChatActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

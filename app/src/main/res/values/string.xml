@@ -17,6 +17,8 @@
     <string name="or">OR</string>
     <string name="empty_view">Strike a conversation!</string>
     <string name="title_activity_maps">Map</string>
+    <string name="logging_in">Logging in</string>
+    <string name="registering_user">Registering</string>
 
 
     <!--Rough Data-->

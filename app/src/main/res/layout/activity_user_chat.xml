@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.flatmates.ixion.activity.UserChatActivity">
+    tools:context="com.flatmates.ixion.activity.chat.UserChatActivity">
 
 </android.support.constraint.ConstraintLayout>

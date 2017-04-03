@@ -1,25 +1,11 @@
-package com.flatmates.ixion.activity;
+package com.flatmates.ixion.activity.chat;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.LoginFilter;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.flatmates.ixion.utils.Utils;
-import com.sendbird.android.GroupChannel;
-import com.sendbird.android.SendBird;
-import com.sendbird.android.SendBirdException;
-import com.sendbird.android.User;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
+import com.flatmates.ixion.R;
 
 public class UserChatActivity extends AppCompatActivity {
 
