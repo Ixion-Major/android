@@ -22,6 +22,7 @@ public class Constants {
     public static final String KEY_BUDGET = "budget";
     public static final String KEY_FEATURE = "feature";
     public static final String KEY_BUNDLE = "bundle";
+    public static final String TO_ASK = "things left to ask to user";
 
     public static final String KEY_NAME= "name";
     public static final String KEY_MOBILE = "mobile";
