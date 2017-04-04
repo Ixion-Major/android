@@ -41,6 +41,7 @@ import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
+import com.flatmates.ixion.activity.PushDataActivity;
 import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
@@ -51,6 +52,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.UserDataHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -241,7 +243,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         bundle.putString(KEY_FEATURE, preferences.getString(KEY_FEATURE, null));
         Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
         intent.putExtra(KEY_BUNDLE, bundle);
-        Log.i(TAG, "showResults: "+bundle.getString(KEY_AREA)+"   "+bundle.getString(KEY_FEATURE));
         startActivity(intent);
     }
 
@@ -249,7 +250,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     public void onStart() {
         super.onStart();
-        buttonShowResults.setVisibility(GONE);
+//        buttonShowResults.setVisibility(GONE);
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -295,7 +296,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
                     String input = result.get(0).toLowerCase();
                     sendInputToServer(input);
                     showUserInputBubble(input);
@@ -323,9 +323,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     private void sendInputToServer(final String input) {
-        //TODO: judge here what API endpoint to use
-        //store in db and send to server for response
-
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
@@ -351,8 +348,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         try {
                             JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
-                                //TODO: do stuff with the extracted information
-
                                 Log.i(TAG, "onResponse: " + serverResponse);
                                 /*
                                 {
@@ -601,6 +596,11 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
+                SharedPreferences.Editor editor = PreferenceManager
+                        .getDefaultSharedPreferences(ChatActivity.this).edit();
+                editor.clear();
+                editor.putBoolean(IS_USER_LOGGED_IN, true);
+                editor.apply();
                 buttonShowResults.setVisibility(GONE);
                 messageView.removeAllViews();
         }
@@ -704,9 +704,11 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         int id = item.getItemId();
 
         if (id == R.id.nav_chat) {
-
+            startActivity(new Intent(ChatActivity.this, UserChatActivity.class));
         } else if (id == R.id.nav_settings) {
 
+        } else if (id == R.id.nav_push_data) {
+            startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

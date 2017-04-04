@@ -1,20 +1,24 @@
 package com.flatmates.ixion.activity;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.chat.UserChatActivity;
 import com.flatmates.ixion.utils.Constants;
 import com.google.vr.sdk.widgets.pano.VrPanoramaView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
@@ -39,11 +43,14 @@ public class DetailsActivity extends AppCompatActivity {
     TextView txt_bhk;
     @BindView(R.id.email)
     TextView txt_email;
-//    @BindView(R.id.mobile)
+    //    @BindView(R.id.mobile)
 //    TextView txt_mobile;
     @BindView(R.id.image_thumb)
     ImageView img_thumb;
-
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.fab_chat)
+    FloatingActionButton fabChat;
 
     String area;
     String bhk;
@@ -56,6 +63,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
 
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
         area = bundle.getString(KEY_AREA).toLowerCase();
@@ -96,4 +104,14 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @OnClick(R.id.fab_chat)
+    public void openChatActivity(){
+        Intent intent = new Intent(DetailsActivity.this, UserChatActivity.class);
+        intent.putExtra(KEY_NAME, name);
+        intent.putExtra(KEY_EMAIL, email);
+        startActivity(intent);
+    }
+
 }
