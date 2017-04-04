@@ -61,8 +61,10 @@ import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
@@ -104,6 +106,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
         showPreviousConversation();
+        bundle = new Bundle();
 
         String enabledMethods =
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
@@ -295,28 +298,61 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 realm.close();
         }
 
-        //TODO: ask for all info
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointChatbot(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String serverResponse) {
-                        String area, bedrooms, city, state;
+                        String area, bedrooms, city, state, budget, feature, message;
                         try {
                             JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
                                 //TODO: do stuff with the extracted information
 
+                                Log.i(TAG, "onResponse: " + serverResponse);
+                                /*
+                                {
+                                     "area": null,
+                                     "bedrooms": "3bhk",
+                                     "budget": null,
+                                     "city": null,
+                                     "feature": "hospital",
+                                     "message": "",
+                                     "state": null,
+                                     "status": "1"
+                                 }
+                                 */
+
                                 area = object.getString("area");
                                 city = object.getString("city");
                                 state = object.getString("state");
                                 bedrooms = object.getString("bedrooms");
-                                bundle = new Bundle();
+                                budget = object.getString("budget");
+                                feature = object.getString("feature");
+                                //TODO: use other parameters
+
                                 bundle.putString(KEY_AREA, area);
                                 bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
-                                //TODO: remove
+                                bundle.putString(KEY_FEATURE, feature);
+                                bundle.putString(KEY_BUDGET, budget);
+
+                                SharedPreferences.Editor editor = preferences.edit();
+                                if (area != null)
+                                    editor.putString(KEY_AREA, area);
+                                if (bedrooms != null)
+                                    editor.putString(KEY_BEDROOMS, bedrooms);
+                                if (city != null)
+                                    editor.putString(KEY_CITY, city);
+                                if (state != null)
+                                    editor.putString(KEY_STATE, state);
+                                if (feature != null)
+                                    editor.putString(KEY_FEATURE, feature);
+                                if (budget != null)
+                                    editor.putString(KEY_BUDGET, budget);
+                                editor.apply();
+
 
                                 Realm realm = null;
                                 try {
@@ -334,7 +370,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                         realm.close();
                                 }
 
-                                showServerResponseBubble(serverResponse);
+                                showServerResponseBubble(serverResponse, bundle); //TODO: set this -> ask for all info, use preferences
                                 buttonShowResults.animate().alpha(1.0f).setDuration(700)
                                         .setListener(new Animator.AnimatorListener() {
                                             @Override
@@ -399,14 +435,37 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void speakOut(final String textToSpeak) {
 
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
-        showServerResponseBubble(textToSpeak);
+        showServerResponseBubble(textToSpeak, null);
 
     }
 
 
-    private void showServerResponseBubble(final String serverResponse) {
+    private void showServerResponseBubble(final String serverResponse, Bundle bundle) {
+
+//        String area, bedrooms, city, state, budget, feature;
+        String toAsk = "";
+
+        if (bundle != null) {
+            //TODO: manipulate all the data that's null and ask from user, if willing to provide
+            if (bundle.getString(KEY_FEATURE) == null)
+                toAsk += "facilities ";
+            if (bundle.getString(KEY_AREA) == null)
+                toAsk += "area ";
+            if (bundle.getString(KEY_BEDROOMS) == null)
+                toAsk += "number ";
+            if (bundle.getString(KEY_CITY) == null)
+                toAsk += "city ";
+            if (bundle.getString(KEY_STATE) == null)
+                toAsk += "state ";
+            if (bundle.getString(KEY_BUDGET) == null)
+                toAsk += "budget ";
+        }
+
+        String reply = "You haven't entered " + toAsk.replace(" ", ", ") +
+                " \nWould you like to enter these or search right now?";
+
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(serverResponse);
+        serverMessage.setText(reply);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -430,14 +489,14 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     if (messages.get(i).isUserSent())
                         showUserInputBubble(messages.get(i).getMessage());
                     else
-                        showServerResponseBubble(messages.get(i).getMessage());
+                        showServerResponseBubble(messages.get(i).getMessage(), null);
                 }
             } finally {
                 if (realm != null)
                     realm.close();
             }
-        } else{
-            showServerResponseBubble("Hi! How may I help you?");
+        } else {
+            showServerResponseBubble("Hi! How may I help you?", null);
         }
     }
 

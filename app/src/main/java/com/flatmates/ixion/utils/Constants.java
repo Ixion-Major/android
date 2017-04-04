@@ -18,6 +18,8 @@ public class Constants {
     public static final String KEY_CITY = "city";
     public static final String KEY_BEDROOMS = "bedrooms";
     public static final String KEY_STATE = "state";
+    public static final String KEY_BUDGET = "budget";
+    public static final String KEY_FEATURE = "feature";
     public static final String KEY_BUNDLE = "bundle";
 
     public static final String KEY_NAME= "name";
