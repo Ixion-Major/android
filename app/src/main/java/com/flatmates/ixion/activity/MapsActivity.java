@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     int max_budget;
     double lat;
     double lon;
-    boolean dataFound = true;
+    boolean dataFound;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRefData = database.getReference("Data");
@@ -99,6 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 max_budget = bud + 2000;
             }
         }
+
+        dataFound = false;
 
         if (!city.equals("") && budget.equals("") && bhk.equals(""))
             fetchData(city);
@@ -193,7 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
-                return false;
+                return true;
             }
         });
     }
@@ -215,10 +217,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
                         showMarker(name, lat, lon);
-                    }else
-                        dataFound = false;
+                        dataFound = true;
+                    }
                 }
-                if(!dataFound){
+                if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
                             .content("No result found")
@@ -237,7 +239,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("MainActivity", databaseError.getDetails());
             }
-
         });
     }
 
@@ -259,10 +260,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_bhk)) {
                         showMarker(name, lat, lon);
-                    }else
-                        dataFound = false;
+                        dataFound = true;
+                    }
                 }
-                if(!dataFound){
+                if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .positiveText("OK")
                             .title("Oops!")
@@ -301,12 +302,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     System.out.println(map_city);
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
-                        if (m_bhk.equals(map_bhk))
+                        if (m_bhk.equals(map_bhk)) {
                             showMarker(name, lat, lon);
-                    }else
-                        dataFound = false;
+                            dataFound = true;
+                        }
+                    }
                 }
-                if(!dataFound){
+                if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
                             .positiveText("OK")
@@ -345,12 +347,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     name = data.getName();
                     lat = Double.parseDouble(data.getLat());
                     lon = Double.parseDouble(data.getLon());
-                    if (mapRent >= min && mapRent <= max)
+                    if (mapRent >= min && mapRent <= max) {
                         showMarker(name, lat, lon);
-                    else
-                        dataFound = false;
+                        dataFound = true;
+                    }
                 }
-                if(!dataFound){
+                if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
                             .positiveText("OK")
@@ -390,23 +392,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lat = Double.parseDouble(data.getLat());
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
-                        if (mapRent >= min && mapRent <= max)
+                        if (mapRent >= min && mapRent <= max) {
                             showMarker(name, lat, lon);
-                    }else
-                        dataFound = false;
-                }
-                if(!dataFound){
-                    new MaterialDialog.Builder(MapsActivity.this)
-                            .title("Oops!")
-                            .positiveText("OK")
-                            .content("No result found")
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    onBackPressed();
-                                }
-                            })
-                            .show();
+                            dataFound = true;
+                        }
+                    }
+                    if (!dataFound) {
+                        new MaterialDialog.Builder(MapsActivity.this)
+                                .title("Oops!")
+                                .positiveText("OK")
+                                .content("No result found")
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        onBackPressed();
+                                    }
+                                })
+                                .show();
+                    }
                 }
             }
 
