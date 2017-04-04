@@ -11,7 +11,13 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -39,6 +45,7 @@ import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
 import com.flatmates.ixion.utils.NetworkConnection;
+import com.flatmates.ixion.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -57,16 +64,18 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static android.view.View.GONE;
-import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
+import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
-        TextToSpeech.OnUtteranceCompletedListener {
+        TextToSpeech.OnUtteranceCompletedListener, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.imagebutton_speak)
     ImageButton imagebuttonSpeak;
@@ -80,6 +89,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ImageButton buttonSend;
     @BindView(R.id.button_show_results)
     Button buttonShowResults;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     TextToSpeech tts;
     Bundle bundle;
@@ -100,10 +115,34 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //        } else {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
         showPreviousConversation();
+        navigationView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                Utils.hideKeyboard(ChatActivity.this, ChatActivity.this);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+        toggle.syncState();
 
         String enabledMethods =
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
@@ -262,8 +301,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
-//        userMessage.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
         userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -295,28 +332,48 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 realm.close();
         }
 
-        //TODO: ask for all info
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointChatbot(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String serverResponse) {
-                        String area, bedrooms, city, state;
+                        final String area, bedrooms, city, state, budget, feature, message;
                         try {
                             JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
                                 //TODO: do stuff with the extracted information
 
+                                Log.i(TAG, "onResponse: " + serverResponse);
+                                /*
+                                {
+                                     "area": null,
+                                     "bedrooms": "3bhk",
+                                     "budget": null,
+                                     "city": null,
+                                     "feature": "hospital",
+                                     "message": "",
+                                     "state": null,
+                                     "status": "1"
+                                 }
+                                 */
+
+                                message = object.getString("message");
                                 area = object.getString("area");
                                 city = object.getString("city");
                                 state = object.getString("state");
                                 bedrooms = object.getString("bedrooms");
+                                budget = object.getString("budget");
+                                feature = object.getString("feature");
+                                //TODO: use other parameters
+
                                 bundle = new Bundle();
+                                bundle.putString(KEY_MESSAGE, message);
                                 bundle.putString(KEY_AREA, area);
-                                bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
-                                //TODO: remove
+                                bundle.putString(KEY_BEDROOMS, bedrooms);
+                                bundle.putString(KEY_BUDGET, budget);
+                                bundle.putString(KEY_FEATURE, feature);
 
                                 Realm realm = null;
                                 try {
@@ -324,9 +381,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
-                                            UserMessage message = realm.createObject(UserMessage.class);
-                                            message.setMessage(serverResponse);
-                                            message.setUserSent(false);
+                                            UserMessage userMessage = realm.createObject(UserMessage.class);
+                                            userMessage.setMessage(serverResponse);
+                                            userMessage.setUserSent(false);
                                         }
                                     });
                                 } finally {
@@ -334,7 +391,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                         realm.close();
                                 }
 
-                                showServerResponseBubble(serverResponse);
+                                showServerResponseBubble(serverResponse); //TODO: set this -> ask for all info, use preferences
                                 buttonShowResults.animate().alpha(1.0f).setDuration(700)
                                         .setListener(new Animator.AnimatorListener() {
                                             @Override
@@ -397,16 +454,27 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
-
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
-        showServerResponseBubble(textToSpeak);
-
+//        showServerResponseBubble(textToSpeak, null);
     }
 
 
-    private void showServerResponseBubble(final String serverResponse) {
+    private void showServerResponseBubble(String serverResponse) {
+
+        String message = "";
+        try {
+            JSONObject response = new JSONObject(serverResponse);
+            message = response.getString("message");
+            //TODO: get and show data that's not null
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(serverResponse);
+        if (!message.equals(""))
+            serverMessage.setText(message);
+        else
+            serverMessage.setText(serverResponse);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -429,15 +497,14 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 for (int i = 0; i < messages.size(); i++) {
                     if (messages.get(i).isUserSent())
                         showUserInputBubble(messages.get(i).getMessage());
-                    else
+                    else {
                         showServerResponseBubble(messages.get(i).getMessage());
+                    }
                 }
             } finally {
                 if (realm != null)
                     realm.close();
             }
-        } else{
-            showServerResponseBubble("Hi! How may I help you?");
         }
     }
 
@@ -469,7 +536,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         clearRealmDB();
         firebaseAuth.signOut();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(IS_USER_LOGGED_IN, false);
+        editor.clear();
         editor.apply();
         Toast.makeText(getApplicationContext(), "Logout Successful", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(ChatActivity.this, LoginActivity.class));
@@ -541,4 +608,31 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
     }
 
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_chat) {
+
+        } else if (id == R.id.nav_settings) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }

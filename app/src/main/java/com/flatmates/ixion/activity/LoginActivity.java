@@ -83,8 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             edittextEmail.setTextColor(getResources().getColor(android.R.color.white));
 
             googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    //http://stackoverflow.com/questions/33583326/new-google-sign-in-android/37657942#37657942
-                    .requestIdToken("505633584744-o3k847illsha7ts03p61qml6i1odpfsp.apps.googleusercontent.com")  //TODO: issue here, web OAuth
+                    .requestIdToken("505633584744-o3k847illsha7ts03p61qml6i1odpfsp.apps.googleusercontent.com")
                     .requestEmail()
                     .build();
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -107,6 +106,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.button_login)
     public void loginUser() {
+
+        //TODO: logging in dialogs
 
         final String email = edittextEmail.getText().toString().trim();
         final String password = edittextPassword.getText().toString().trim();
@@ -244,6 +245,13 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .content(R.string.registering_user)
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        progressDialog.show();
+
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -255,6 +263,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.e(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Couldn't sign in",
                                     Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
                         } else {
                             Toast.makeText(getApplicationContext(), "Sign in Successful",
                                     Toast.LENGTH_SHORT).show();
@@ -264,6 +273,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putBoolean(IS_USER_LOGGED_IN, true);
                             editor.putString(USER_EMAIL, acct.getEmail());
                             editor.apply();
+                            progressDialog.dismiss();
                             startActivity(new Intent(LoginActivity.this, ChatActivity.class));
                         }
                     }
