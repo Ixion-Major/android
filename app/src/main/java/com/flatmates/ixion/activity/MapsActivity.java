@@ -35,6 +35,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
+import static com.flatmates.ixion.utils.Constants.KEY_IMAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
 import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 import static com.flatmates.ixion.utils.Constants.KEY_RENT;
@@ -107,6 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String email = data.getEmail();
                             String mobile = data.getMobile();
                             String address = data.getAddress();
+                            String image = data.getPurl();
 
                             Bundle bundle = new Bundle();
                             bundle.putString(KEY_AREA, area);
@@ -118,6 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             bundle.putString(KEY_MOBILE, mobile);
                             bundle.putString(KEY_EMAIL, email);
                             bundle.putString(KEY_RENT, rent);
+                            bundle.putString(KEY_IMAGE, image);
                             Intent intent = new Intent(MapsActivity.this,DetailsActivity.class);
                             intent.putExtra(KEY_BUNDLE, bundle);
                             startActivity(intent);
