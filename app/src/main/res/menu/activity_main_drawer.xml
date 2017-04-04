@@ -4,7 +4,10 @@
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat"
             android:title="@string/show_previous_chat" />
-
+        <item
+            android:id="@+id/nav_push_data"
+            android:icon="@drawable/ic_home"
+            android:title="@string/list_your_property" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"

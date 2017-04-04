@@ -43,6 +43,12 @@ public class VRActivity extends Activity {
 
         // Make the source link clickable.
 
+        try {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: ", e);
+        }
+
         panoWidgetView = (VrPanoramaView) findViewById(R.id.pano_view);
         panoWidgetView.setEventListener(new ActivityEventListener());
 

@@ -41,4 +41,6 @@
     <string name="rent">Rent: </string>
     <string name="mobile">Contact no.: </string>
     <string name="email_id">Email id: </string>
+    <string name="list_your_property">List your property</string>
+    <string name="create_contract">Create Contract</string>
 </resources>

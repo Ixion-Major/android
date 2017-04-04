@@ -1,137 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_details"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.flatmates.ixion.activity.DetailsActivity">
+    tools:context="com.flatmates.ixion.activity.chat.ChatActivity">
 
-    <ImageView
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:id="@+id/image_thumb"
-        android:layout_marginBottom="4dp"/>
-
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <TextView
-            style="@style/DetailsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/owner_name" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <TextView
-            android:id="@+id/owner_name"
-            style="@style/DetailsTextSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+    </android.support.design.widget.AppBarLayout>
 
-    </LinearLayout>
+    <include layout="@layout/content_details_activity" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_chat"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_chat_white"
+        app:fabSize="normal" />
 
-        <TextView
-            style="@style/DetailsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/number_of_rooms" />
-
-
-        <TextView
-            android:id="@+id/bhk"
-            style="@style/DetailsTextSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/DetailsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rent" />
-
-        <TextView
-            android:id="@+id/rent"
-            style="@style/DetailsTextSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<TextView-->
-            <!--style="@style/DetailsText"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/mobile" />-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/mobile"-->
-            <!--style="@style/DetailsTextSmall"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content" />-->
-
-    <!--</LinearLayout>-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/DetailsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/email_id" />
-
-        <TextView
-            android:id="@+id/email"
-            style="@style/DetailsTextSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/DetailsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/address" />
-
-        <TextView
-            android:id="@+id/address"
-            style="@style/DetailsTextSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
