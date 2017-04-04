@@ -18,6 +18,15 @@ public class Data {
     String email;
     String address;
     String mobile;
+    String purl;
+
+    public String getPurl() {
+        return purl;
+    }
+
+    public void setPurl(String purl) {
+        this.purl = purl;
+    }
 
     public Data(){
     }

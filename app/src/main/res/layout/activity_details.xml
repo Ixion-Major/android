@@ -11,40 +11,127 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.flatmates.ixion.activity.DetailsActivity">
 
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:id="@+id/image_thumb"
+        android:layout_marginBottom="4dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/city"
             style="@style/DetailsText"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/owner_name" />
 
+        <TextView
+            android:id="@+id/owner_name"
+            style="@style/DetailsTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/area"
-        style="@style/DetailsText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/address" />
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/DetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/number_of_rooms" />
 
 
-    <TextView
-        android:id="@+id/bhk"
-        style="@style/DetailsText"
+        <TextView
+            android:id="@+id/bhk"
+            style="@style/DetailsTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/number_of_rooms" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/state"
-        style="@style/DetailsText"
+        <TextView
+            style="@style/DetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rent" />
+
+        <TextView
+            android:id="@+id/rent"
+            style="@style/DetailsTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--style="@style/DetailsText"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/mobile" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/mobile"-->
+            <!--style="@style/DetailsTextSmall"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+
+    <!--</LinearLayout>-->
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/rent" />
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/DetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/email_id" />
+
+        <TextView
+            android:id="@+id/email"
+            style="@style/DetailsTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/DetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/address" />
+
+        <TextView
+            android:id="@+id/address"
+            style="@style/DetailsTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>

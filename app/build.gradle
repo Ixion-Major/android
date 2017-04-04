@@ -26,10 +26,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.release_config
+        }
     }
     buildTypes.each {
         it.buildConfigField('String', 'SENDBIRD_APP_ID', SENDBIRD_APP_ID)
-
     }
     productFlavors {
     }
@@ -51,6 +53,7 @@ dependencies {
     compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.facebook.stetho:stetho:1.4.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.vr:sdk-audio:1.10.0'
     compile 'com.google.vr:sdk-base:1.10.0'
     compile 'com.google.vr:sdk-common:1.10.0'

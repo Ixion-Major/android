@@ -3,7 +3,7 @@
     <string name="show_previous_chat">Chats</string>
     <string name="goto_settings">Settings</string>
     <string name="nav_about_us">About Us</string>
-    <string name="app_name">FLATMATE</string>
+    <string name="app_name">FlatMate</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="log_in">LOG IN</string>
@@ -24,14 +24,6 @@
     <string name="logging_in">Logging in</string>
     <string name="registering_user">Registering</string>
 
-
-    <!--Rough Data-->
-    <string name="owner_name">Owner name: Natwarlal</string>
-    <string name="address">Address: Abc colony, Delhi</string>
-    <string name="number_of_rooms">Number of Rooms: 3</string>
-    <string name="rent">Rent: Rs. 20,000</string>
-
-
     <!--Nav drawer-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -42,4 +34,11 @@
     <string name="action_clear_all">Clear All</string>
     <string name="action_mark_all_read">Mark All as Read</string>
     <string name="privacy_policy">Privacy Policy</string>
+
+    <string name="owner_name">Owner name: </string>
+    <string name="address">Address: </string>
+    <string name="number_of_rooms">Number of Rooms: </string>
+    <string name="rent">Rent: </string>
+    <string name="mobile">Contact no.: </string>
+    <string name="email_id">Email id: </string>
 </resources>
