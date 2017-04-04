@@ -11,7 +11,13 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -39,6 +45,7 @@ import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
 import com.flatmates.ixion.utils.NetworkConnection;
+import com.flatmates.ixion.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -57,7 +64,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static android.view.View.GONE;
-import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
@@ -69,7 +75,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
-        TextToSpeech.OnUtteranceCompletedListener {
+        TextToSpeech.OnUtteranceCompletedListener, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.imagebutton_speak)
     ImageButton imagebuttonSpeak;
@@ -83,6 +89,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ImageButton buttonSend;
     @BindView(R.id.button_show_results)
     Button buttonShowResults;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     TextToSpeech tts;
     Bundle bundle;
@@ -103,11 +115,34 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //        } else {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
         showPreviousConversation();
-//        bundle = new Bundle();
+        navigationView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                Utils.hideKeyboard(ChatActivity.this, ChatActivity.this);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+        toggle.syncState();
 
         String enabledMethods =
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
@@ -426,8 +461,20 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void showServerResponseBubble(String serverResponse) {
 
+        String message = "";
+        try {
+            JSONObject response = new JSONObject(serverResponse);
+            message = response.getString("message");
+            //TODO: get and show data that's not null
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(serverResponse);
+        if (!message.equals(""))
+            serverMessage.setText(message);
+        else
+            serverMessage.setText(serverResponse);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -561,4 +608,31 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
     }
 
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_chat) {
+
+        } else if (id == R.id.nav_settings) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }

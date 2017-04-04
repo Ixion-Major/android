@@ -107,6 +107,8 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.button_login)
     public void loginUser() {
 
+        //TODO: logging in dialogs
+
         final String email = edittextEmail.getText().toString().trim();
         final String password = edittextPassword.getText().toString().trim();
 
