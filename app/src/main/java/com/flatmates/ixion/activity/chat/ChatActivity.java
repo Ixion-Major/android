@@ -65,6 +65,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static android.view.View.GONE;
+import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
@@ -230,8 +231,17 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void showResults() {
         clearRealmDB();
         messageView.removeAllViews();
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_MESSAGE, preferences.getString(KEY_MESSAGE, ""));
+        bundle.putString(KEY_AREA, preferences.getString(KEY_AREA, null));
+        bundle.putString(KEY_CITY, preferences.getString(KEY_CITY, null));
+        bundle.putString(KEY_STATE, preferences.getString(KEY_STATE, null));
+        bundle.putString(KEY_BEDROOMS, preferences.getString(KEY_BEDROOMS, null));
+        bundle.putString(KEY_BUDGET, preferences.getString(KEY_BUDGET, null));
+        bundle.putString(KEY_FEATURE, preferences.getString(KEY_FEATURE, null));
         Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
         intent.putExtra(KEY_BUNDLE, bundle);
+        Log.i(TAG, "showResults: "+bundle.getString(KEY_AREA)+"   "+bundle.getString(KEY_FEATURE));
         startActivity(intent);
     }
 
@@ -305,7 +315,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(100, 20, 10, 20); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(150, 30, 10, 30); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
         messageView.addView(userMessage);
@@ -367,13 +377,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 //TODO: use other parameters
 
                                 bundle = new Bundle();
-                                bundle.putString(KEY_MESSAGE, message);
-                                bundle.putString(KEY_AREA, area);
-                                bundle.putString(KEY_CITY, city);
-                                bundle.putString(KEY_STATE, state);
-                                bundle.putString(KEY_BEDROOMS, bedrooms);
-                                bundle.putString(KEY_BUDGET, budget);
-                                bundle.putString(KEY_FEATURE, feature);
+                                bundle.putString(KEY_MESSAGE, preferences.getString(KEY_MESSAGE, ""));
+                                bundle.putString(KEY_AREA, preferences.getString(KEY_AREA, null));
+                                bundle.putString(KEY_CITY, preferences.getString(KEY_CITY, null));
+                                bundle.putString(KEY_STATE, preferences.getString(KEY_STATE, null));
+                                bundle.putString(KEY_BEDROOMS, preferences.getString(KEY_BEDROOMS, null));
+                                bundle.putString(KEY_BUDGET, preferences.getString(KEY_BUDGET, null));
+                                bundle.putString(KEY_FEATURE, preferences.getString(KEY_FEATURE, null));
 
                                 saveToPreferencesIfNotNull(area, city, state, bedrooms, budget, feature);
 
@@ -457,7 +467,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                             String bedrooms, String budget, String feature) {
         String toAsk = "";
         SharedPreferences.Editor editor = preferences.edit();
-        Log.i(TAG, "saveToPreferencesIfNotNull: feature: " + feature.getClass().getName());
         if (!Objects.equals(feature, "null"))
             editor.putString(KEY_FEATURE, feature);
         else toAsk += "feature ";
@@ -518,7 +527,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(10, 20, 100, 20); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(10, 30, 150, 30); // llp.setMargins(left, top, right, bottom);
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
