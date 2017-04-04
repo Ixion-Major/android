@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,6 +74,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
 import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
+import static com.flatmates.ixion.utils.Constants.TO_ASK;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
         TextToSpeech.OnUtteranceCompletedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -375,6 +377,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_BUDGET, budget);
                                 bundle.putString(KEY_FEATURE, feature);
 
+                                saveToPreferencesIfNotNull(area, city, state, bedrooms, budget, feature);
+
                                 Realm realm = null;
                                 try {
                                     realm = Realm.getDefaultInstance();
@@ -451,6 +455,33 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Constants.REQUEST_SEND_SPEECH_INPUT_TO_SERVER);
     }
 
+    private void saveToPreferencesIfNotNull(String area, String city, String state,
+                                            String bedrooms, String budget, String feature) {
+        String toAsk = "";
+        SharedPreferences.Editor editor = preferences.edit();
+        Log.i(TAG, "saveToPreferencesIfNotNull: feature: " + feature.getClass().getName());
+        if (!Objects.equals(feature, "null"))
+            editor.putString(KEY_FEATURE, feature);
+        else toAsk += "feature ";
+        if (!Objects.equals(city, "null"))
+            editor.putString(KEY_CITY, city);
+        else toAsk += "city  ";
+        if (!Objects.equals(budget, "null"))
+            editor.putString(KEY_BUDGET, budget);
+        else toAsk += "budget ";
+        if (!Objects.equals(bedrooms, "null"))
+            editor.putString(KEY_BEDROOMS, bedrooms);
+        else toAsk += "bedrooms ";
+        if (!Objects.equals(area, "null"))
+            editor.putString(KEY_AREA, area);
+        else toAsk += "area ";
+        if (!Objects.equals(state, "null"))
+            editor.putString(KEY_STATE, state);
+        else toAsk += "state ";
+        editor.putString(TO_ASK, toAsk);
+        editor.apply();
+    }
+
 
     //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
@@ -462,10 +493,18 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void showServerResponseBubble(String serverResponse) {
 
         String message = "";
+        String area, city, state, bedrooms, budget, feature;
         try {
             JSONObject response = new JSONObject(serverResponse);
             message = response.getString("message");
-            //TODO: get and show data that's not null
+
+            area = response.getString("area");
+            city = response.getString("city");
+            state = response.getString("state");
+            bedrooms = response.getString("bedrooms");
+            budget = response.getString("budget");
+            feature = response.getString("feature");
+            saveToPreferencesIfNotNull(area, city, state, bedrooms, budget, feature);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -474,7 +513,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (!message.equals(""))
             serverMessage.setText(message);
         else
-            serverMessage.setText(serverResponse);
+            serverMessage.setText(getFromPreferences());
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -485,6 +524,38 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
+    }
+
+
+    public String getFromPreferences() {
+        String response = "";
+        String area, city, state, bedrooms, budget, feature;
+        feature = preferences.getString(KEY_FEATURE, null);
+        area = preferences.getString(KEY_AREA, null);
+        city = preferences.getString(KEY_CITY, null);
+        bedrooms = preferences.getString(KEY_BEDROOMS, null);
+        budget = preferences.getString(KEY_BUDGET, null);
+        state = preferences.getString(KEY_STATE, null);
+
+        try {
+            if (feature != null)
+                response += feature + " ";
+            if (city != null)
+                response += city + " ";
+            if (budget != null)
+                response += budget + " ";
+            if (bedrooms != null)
+                response += bedrooms + " ";
+            if (area != null)
+                response += area + " ";
+            if (state != null)
+                response += state + " ";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "Finding properties matching " + response.trim().replace("null", "").replace(" +", ",") +
+                " near you.\n\nYou want to enter more filters?";
     }
 
 
@@ -635,4 +706,5 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
