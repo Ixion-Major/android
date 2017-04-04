@@ -44,13 +44,20 @@
 
         <activity
             android:name=".activity.DetailsActivity"
+            android:parentActivityName=".activity.MapsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".activity.VRActivity" />
+        <activity
+            android:name=".activity.VRActivity"
+            android:parentActivityName=".activity.DetailsActivity" />
 
-        <activity android:name=".activity.chat.UserChatActivity" />
+        <activity
+            android:name=".activity.chat.UserChatActivity"
+            android:parentActivityName=".activity.DetailsActivity" />
 
-        <activity android:name=".activity.PushDataActivity" />
+        <activity
+            android:name=".activity.PushDataActivity"
+            android:parentActivityName=".activity.chat.ChatActivity" />
 
     </application>
 

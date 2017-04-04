@@ -3,6 +3,7 @@ package com.flatmates.ixion.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,12 +27,21 @@ public class PushDataActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRefUserData = database.getReference("Data");
 
+    private static final String TAG = PushDataActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_push_data);
         ButterKnife.bind(this);
+        setTitle("List Property");
+
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: ", e);
+        }
 
         //TODO: get lat lon from address
 

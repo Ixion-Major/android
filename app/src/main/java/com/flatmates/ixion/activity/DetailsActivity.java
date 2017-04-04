@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,12 +59,21 @@ public class DetailsActivity extends AppCompatActivity {
     String state;
     String rent, name, email, mobile, address, image;
 
+    private static final String TAG = DetailsActivity.class.getSimpleName();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: ", e);
+        }
 
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
         area = bundle.getString(KEY_AREA).toLowerCase();
@@ -107,10 +117,12 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.fab_chat)
-    public void openChatActivity(){
+    public void openChatActivity() {
         Intent intent = new Intent(DetailsActivity.this, UserChatActivity.class);
         intent.putExtra(KEY_NAME, name);
         intent.putExtra(KEY_EMAIL, email);
+        intent.putExtra(KEY_ADDRESS, address);
+        intent.putExtra(KEY_MOBILE, mobile);
         startActivity(intent);
     }
 

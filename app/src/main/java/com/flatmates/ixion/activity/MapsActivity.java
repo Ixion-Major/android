@@ -47,6 +47,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
 import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 import static com.flatmates.ixion.utils.Constants.KEY_RENT;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
+import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -76,18 +77,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //TODO: crashes here when you go to VR/userChat activity and come back -> Bundle is null
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
         if (bundle.getString(KEY_AREA) != null)
             area = bundle.getString(KEY_AREA).toLowerCase();
         if (bundle.getString(KEY_BEDROOMS) != null) {
-            bhk = bundle.getString(KEY_BEDROOMS);
-            bhk = bhk.substring(0, 1);
+            if (bundle.getString(KEY_BEDROOMS).length() > 0) {  //TODO: crash due to 0 length in case of null -> was fixed
+                bhk = bundle.getString(KEY_BEDROOMS);
+                bhk = bhk.substring(0, 1);
+            }
         }
         if (bundle.getString(KEY_CITY) != null)
             city = bundle.getString(KEY_CITY).toLowerCase();
         if (bundle.getString(KEY_STATE) != null)
             state = bundle.getString(KEY_STATE).toLowerCase();
-        if (bundle.getString(KEY_BUDGET) != null) {
+        if (bundle.getString(KEY_BUDGET) != null && bundle.getString(KEY_BUDGET).length() > 3) {
             budget = bundle.getString(KEY_BUDGET);
             if (budget.contains("-")) {
                 String[] parts = budget.split("-");
@@ -140,8 +144,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MapsActivity.this).edit();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MapsActivity.this);
+        String email = preferences.getString(USER_EMAIL, "");
+        SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
+        editor.putString(USER_EMAIL, email);
         editor.putBoolean(IS_USER_LOGGED_IN, true);
         editor.apply();
     }

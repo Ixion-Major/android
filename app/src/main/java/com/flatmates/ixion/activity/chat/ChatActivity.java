@@ -78,6 +78,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
 import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 import static com.flatmates.ixion.utils.Constants.TO_ASK;
+import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
         TextToSpeech.OnUtteranceCompletedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -362,7 +363,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                  }
                                  */
 
-                                message = object.getString("message");
                                 area = object.getString("area");
                                 city = object.getString("city");
                                 state = object.getString("state");
@@ -540,23 +540,25 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         state = preferences.getString(KEY_STATE, null);
 
         try {
-            if (feature != null)
-                response += feature + ", ";
-            if (city != null)
-                response += city + ", ";
-            if (budget != null)
-                response += budget + ", ";
-            if (bedrooms != null)
-                response += bedrooms + ", ";
-            if (area != null)
-                response += area + ", ";
-            if (state != null)
-                response += state + ", ";
+            if (feature != null && !feature.equals(""))
+                response += feature + " ";
+            if (city != null && !city.equals(""))
+                response += city + " ";
+            if (budget != null && !budget.equals(""))
+                response += budget + " ";
+            if (bedrooms != null && !bedrooms.equals(""))
+                response += bedrooms + " ";
+            if (area != null && !area.equals(""))
+                response += area + " ";
+            if (state != null && !state.equals(""))
+                response += state + " ";
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return "Finding properties matching " + response.trim().replace("null", "").replace(" +", ", ") +
+        return "Finding properties matching " + response.trim()
+                .replace("null", "")
+                .replace(" +", " ") +
                 " near you.\n\nAdd more filters or search?";
     }
 
@@ -596,9 +598,11 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
-                SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(ChatActivity.this).edit();
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
+                String email = preferences.getString(USER_EMAIL, "");
+                SharedPreferences.Editor editor = preferences.edit();
                 editor.clear();
+                editor.putString(USER_EMAIL, email);
                 editor.putBoolean(IS_USER_LOGGED_IN, true);
                 editor.apply();
                 buttonShowResults.setVisibility(GONE);
