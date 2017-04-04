@@ -1,15 +1,14 @@
 package com.flatmates.ixion.activity;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.model.Data;
-import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,10 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-
-import static com.flatmates.ixion.utils.Constants.IS_USER_ORDER_COMPLETE;
+import static com.flatmates.ixion.utils.Constants.IS_USER_LOGGED_IN;
 import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
@@ -54,6 +50,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRefData = database.getReference("Data");
 
+    private static final String TAG = MapsActivity.class.getSimpleName();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +63,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
-        area = bundle.getString(KEY_AREA).toLowerCase();
-        bhk = bundle.getString(KEY_BEDROOMS);
-        city = bundle.getString(KEY_CITY).toLowerCase();
-        state = bundle.getString(KEY_STATE).toLowerCase();
+        try {
+            area = bundle.getString(KEY_AREA).toLowerCase();
+            bhk = bundle.getString(KEY_BEDROOMS);
+            city = bundle.getString(KEY_CITY).toLowerCase();
+            state = bundle.getString(KEY_STATE).toLowerCase();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         fetchData();
 
     }
@@ -85,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void showMarker(Double lati, Double loni) {
         LatLng apna = new LatLng(lati, loni);
-        mMap.addMarker(new MarkerOptions().position(apna).title(bhk + "   " + area+"  "+city+"  "+state));
+        mMap.addMarker(new MarkerOptions().position(apna).title(bhk + "   " + area + "  " + city + "  " + state));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -118,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             bundle.putString(KEY_MOBILE, mobile);
                             bundle.putString(KEY_EMAIL, email);
                             bundle.putString(KEY_RENT, rent);
-                            Intent intent = new Intent(MapsActivity.this,DetailsActivity.class);
+                            Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
                             intent.putExtra(KEY_BUNDLE, bundle);
                             startActivity(intent);
                         }
@@ -136,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void fetchData() {
-
+        Log.i(TAG, "onDataChange: " + area + " " + city + " " + state);
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -166,7 +169,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("MainActivity", databaseError.getDetails());
             }
         });
+    }
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MapsActivity.this).edit();
+        editor.clear();
+        editor.putBoolean(IS_USER_LOGGED_IN, true);
+        editor.apply();
     }
 }
