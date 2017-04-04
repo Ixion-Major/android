@@ -14,6 +14,7 @@ public class Constants {
     public static final String USER_MESSAGE = "user_message";
     public static final String IS_USER_LOGGED_IN = "is user logged in?";
 
+    public static final String KEY_MESSAGE = "message";
     public static final String KEY_AREA = "area";
     public static final String KEY_CITY = "city";
     public static final String KEY_BEDROOMS = "bedrooms";

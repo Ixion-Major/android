@@ -65,6 +65,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
+import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
@@ -106,7 +107,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
         showPreviousConversation();
-        bundle = new Bundle();
+//        bundle = new Bundle();
 
         String enabledMethods =
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
@@ -265,8 +266,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setText(input);
         userMessage.setGravity(Gravity.END);
         userMessage.setTextSize(18);
-//        userMessage.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-//        userMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
         userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -303,7 +302,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String serverResponse) {
-                        String area, bedrooms, city, state, budget, feature, message;
+                        final String area, bedrooms, city, state, budget, feature, message;
                         try {
                             JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
@@ -323,6 +322,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                  }
                                  */
 
+                                message = object.getString("message");
                                 area = object.getString("area");
                                 city = object.getString("city");
                                 state = object.getString("state");
@@ -331,28 +331,14 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 feature = object.getString("feature");
                                 //TODO: use other parameters
 
+                                bundle = new Bundle();
+                                bundle.putString(KEY_MESSAGE, message);
                                 bundle.putString(KEY_AREA, area);
-                                bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_CITY, city);
                                 bundle.putString(KEY_STATE, state);
-                                bundle.putString(KEY_FEATURE, feature);
+                                bundle.putString(KEY_BEDROOMS, bedrooms);
                                 bundle.putString(KEY_BUDGET, budget);
-
-                                SharedPreferences.Editor editor = preferences.edit();
-                                if (area != null)
-                                    editor.putString(KEY_AREA, area);
-                                if (bedrooms != null)
-                                    editor.putString(KEY_BEDROOMS, bedrooms);
-                                if (city != null)
-                                    editor.putString(KEY_CITY, city);
-                                if (state != null)
-                                    editor.putString(KEY_STATE, state);
-                                if (feature != null)
-                                    editor.putString(KEY_FEATURE, feature);
-                                if (budget != null)
-                                    editor.putString(KEY_BUDGET, budget);
-                                editor.apply();
-
+                                bundle.putString(KEY_FEATURE, feature);
 
                                 Realm realm = null;
                                 try {
@@ -360,9 +346,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
-                                            UserMessage message = realm.createObject(UserMessage.class);
-                                            message.setMessage(serverResponse);
-                                            message.setUserSent(false);
+                                            UserMessage userMessage = realm.createObject(UserMessage.class);
+                                            userMessage.setMessage(serverResponse);
+                                            userMessage.setUserSent(false);
                                         }
                                     });
                                 } finally {
@@ -370,7 +356,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                         realm.close();
                                 }
 
-                                showServerResponseBubble(serverResponse, bundle); //TODO: set this -> ask for all info, use preferences
+                                showServerResponseBubble(serverResponse); //TODO: set this -> ask for all info, use preferences
                                 buttonShowResults.animate().alpha(1.0f).setDuration(700)
                                         .setListener(new Animator.AnimatorListener() {
                                             @Override
@@ -433,39 +419,15 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
-
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
-        showServerResponseBubble(textToSpeak, null);
-
+//        showServerResponseBubble(textToSpeak, null);
     }
 
 
-    private void showServerResponseBubble(final String serverResponse, Bundle bundle) {
-
-//        String area, bedrooms, city, state, budget, feature;
-        String toAsk = "";
-
-        if (bundle != null) {
-            //TODO: manipulate all the data that's null and ask from user, if willing to provide
-            if (bundle.getString(KEY_FEATURE) == null)
-                toAsk += "facilities ";
-            if (bundle.getString(KEY_AREA) == null)
-                toAsk += "area ";
-            if (bundle.getString(KEY_BEDROOMS) == null)
-                toAsk += "number ";
-            if (bundle.getString(KEY_CITY) == null)
-                toAsk += "city ";
-            if (bundle.getString(KEY_STATE) == null)
-                toAsk += "state ";
-            if (bundle.getString(KEY_BUDGET) == null)
-                toAsk += "budget ";
-        }
-
-        String reply = "You haven't entered " + toAsk.replace(" ", ", ") +
-                " \nWould you like to enter these or search right now?";
+    private void showServerResponseBubble(String serverResponse) {
 
         TextView serverMessage = new TextView(ChatActivity.this);
-        serverMessage.setText(reply);
+        serverMessage.setText(serverResponse);
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
         serverMessage.setTextColor(getResources().getColor(android.R.color.black));
@@ -488,15 +450,14 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 for (int i = 0; i < messages.size(); i++) {
                     if (messages.get(i).isUserSent())
                         showUserInputBubble(messages.get(i).getMessage());
-                    else
-                        showServerResponseBubble(messages.get(i).getMessage(), null);
+                    else {
+                        showServerResponseBubble(messages.get(i).getMessage());
+                    }
                 }
             } finally {
                 if (realm != null)
                     realm.close();
             }
-        } else {
-            showServerResponseBubble("Hi! How may I help you?", null);
         }
     }
 
@@ -528,7 +489,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         clearRealmDB();
         firebaseAuth.signOut();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(IS_USER_LOGGED_IN, false);
+        editor.clear();
         editor.apply();
         Toast.makeText(getApplicationContext(), "Logout Successful", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(ChatActivity.this, LoginActivity.class));
