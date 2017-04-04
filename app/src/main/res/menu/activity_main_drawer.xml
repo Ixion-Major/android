@@ -1,5 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_chat"
@@ -20,7 +19,9 @@
             <item
                 android:id="@+id/nav_privacy_policy"
                 android:title="@string/privacy_policy" />
+            <item
+                android:id="@+id/action_logout"
+                android:title="@string/action_logout" />
         </menu>
     </item>
-
 </menu>

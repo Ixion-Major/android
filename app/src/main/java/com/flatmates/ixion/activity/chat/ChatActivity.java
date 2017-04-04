@@ -105,8 +105,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final String TAG = ChatActivity.class.getSimpleName();
 
-//    TODO: save user city, etc here and ask for more info of not given by user- CLIENT SIDE,
-//          incorporate other helper endpoints
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -539,23 +537,23 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         try {
             if (feature != null)
-                response += feature + " ";
+                response += feature + ", ";
             if (city != null)
-                response += city + " ";
+                response += city + ", ";
             if (budget != null)
-                response += budget + " ";
+                response += budget + ", ";
             if (bedrooms != null)
-                response += bedrooms + " ";
+                response += bedrooms + ", ";
             if (area != null)
-                response += area + " ";
+                response += area + ", ";
             if (state != null)
-                response += state + " ";
+                response += state + ", ";
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return "Finding properties matching " + response.trim().replace("null", "").replace(" +", ",") +
-                " near you.\n\nYou want to enter more filters?";
+        return "Finding properties matching " + response.trim().replace("null", "").replace(" +", ", ") +
+                " near you.\n\nAdd more filters or search?";
     }
 
 

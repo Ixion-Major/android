@@ -38,4 +38,12 @@ public class Endpoints {
         return BASE_URL + "/property-bot/fetch-feature";
     }
 
+    public static String endpointContractRegister(String sha256) {
+        return "https://proofofexistence.com/api/v1/register?d=" + sha256;
+    }
+
+    public static String endpointContractStatus(String sha256) {
+        return "https://proofofexistence.com/api/v1/status?d=" + sha256;
+    }
+
 }
