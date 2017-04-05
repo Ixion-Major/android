@@ -59,8 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String rent = "";
     String name = "";
     String budget = "";
-    int min_budget;
-    int max_budget;
+    int minBudget;
+    int maxBudget;
     double lat;
     double lon;
     boolean dataFound;
@@ -95,12 +95,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             budget = bundle.getString(KEY_BUDGET);
             if (budget.contains("-")) {
                 String[] parts = budget.split("-");
-                min_budget = Integer.parseInt(parts[0]);
-                max_budget = Integer.parseInt(parts[1]);
+                minBudget = Integer.parseInt(parts[0]);
+                maxBudget = Integer.parseInt(parts[1]);
             } else {
                 int bud = Integer.parseInt(budget);
-                min_budget = bud - 2000;
-                max_budget = bud + 2000;
+                minBudget = bud - 2000;
+                maxBudget = bud + 2000;
             }
         }
 
@@ -112,22 +112,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             fetchData(area);
         else if (!state.equals("") && budget.equals("") && bhk.equals(""))
             fetchData(state);
-        else if (!bhk.equals("") && budget.equals(""))
-            fetchBhk(bhk);
+        else if (!budget.equals("") && !area.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, area);
+        else if (!budget.equals("") && !city.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, city);
+        else if (!budget.equals("") && !state.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, state);
         else if (!budget.equals("") && city.equals(""))
-            fetchBudget(min_budget, max_budget);
+            fetchBudget(minBudget, maxBudget);
         else if (!area.equals("") && !bhk.equals(""))
             fetchAB(area, bhk);
         else if (!city.equals("") && !bhk.equals(""))
             fetchAB(city, bhk);
         else if (!state.equals("") && !bhk.equals(""))
             fetchAB(state, bhk);
-        else if (!budget.equals("") && !area.equals(""))
-            fetchBUDAREA(min_budget, max_budget, area);
-        else if (!budget.equals("") && !city.equals(""))
-            fetchBUDAREA(min_budget, max_budget, city);
-        else if (!budget.equals("") && !state.equals(""))
-            fetchBUDAREA(min_budget, max_budget, state);
+        else if (!bhk.equals(""))
+            fetchBhk(bhk);
+
 
     }
 
@@ -139,24 +140,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MapsActivity.this);
-        String email = preferences.getString(USER_EMAIL, "");
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.clear();
-        editor.putString(USER_EMAIL, email);
-        editor.putBoolean(IS_USER_LOGGED_IN, true);
-        editor.apply();
-    }
-
-    private void showMarker(String name, Double lati, Double loni) {
-        LatLng apna = new LatLng(lati, loni);
-        mMap.addMarker(new MarkerOptions().position(apna).title(name));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -205,6 +188,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MapsActivity.this);
+        String email = preferences.getString(USER_EMAIL, "");
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.putString(USER_EMAIL, email);
+        editor.putBoolean(IS_USER_LOGGED_IN, true);
+        editor.apply();
+    }
+
+    private void showMarker(String name, Double lati, Double loni) {
+        LatLng apna = new LatLng(lati, loni);
+        mMap.addMarker(new MarkerOptions().position(apna).title(name));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
+
     }
 
     private void fetchData(final String match) {
@@ -304,10 +306,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String map_state = data.getState();
                     String map_rent = data.getRent();
                     String map_bhk = data.getBhk();
+                    map_bhk = map_bhk.substring(0, 1);
                     name = data.getName();
                     lat = Double.parseDouble(data.getLat());
                     lon = Double.parseDouble(data.getLon());
-                    System.out.println(map_city);
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
                         if (m_bhk.equals(map_bhk)) {
                             showMarker(name, lat, lon);
