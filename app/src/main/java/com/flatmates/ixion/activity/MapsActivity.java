@@ -151,31 +151,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Data data = snapshot.getValue(Data.class);
 
-                            String area = data.getArea();
-                            String bhk = data.getBhk();
-                            String rent = data.getRent();
-                            String city = data.getCity();
-                            String state = data.getState();
-                            String name = data.getName();
-                            String email = data.getEmail();
-                            String mobile = data.getMobile();
-                            String address = data.getAddress();
-                            String image = data.getPurl();
+                            final String area = data.getArea();
+                            final String bhk = data.getBhk();
+                            final String rent = data.getRent();
+                            final String city = data.getCity();
+                            final String state = data.getState();
+                            final String name = data.getName();
+                            final String email = data.getEmail();
+                            final String mobile = data.getMobile();
+                            final String address = data.getAddress();
+                            final String image = data.getPurl();
 
-                            Bundle bundle = new Bundle();
-                            bundle.putString(KEY_AREA, area);
-                            bundle.putString(KEY_BEDROOMS, bhk);
-                            bundle.putString(KEY_CITY, city);
-                            bundle.putString(KEY_STATE, state);
-                            bundle.putString(KEY_NAME, name);
-                            bundle.putString(KEY_ADDRESS, address);
-                            bundle.putString(KEY_MOBILE, mobile);
-                            bundle.putString(KEY_EMAIL, email);
-                            bundle.putString(KEY_RENT, rent);
-                            bundle.putString(KEY_IMAGE, image);
-                            Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
-                            intent.putExtra(KEY_BUNDLE, bundle);
-                            startActivity(intent);
+                            new MaterialDialog.Builder(MapsActivity.this)
+                                    .title(name)
+                                    .content("Rent: " + rent + "\nNo. of Rooms: "+ bhk+"\nAddress: " + address)
+                                    .positiveText("SHOW MORE")
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString(KEY_AREA, area);
+                                            bundle.putString(KEY_BEDROOMS, bhk);
+                                            bundle.putString(KEY_CITY, city);
+                                            bundle.putString(KEY_STATE, state);
+                                            bundle.putString(KEY_NAME, name);
+                                            bundle.putString(KEY_ADDRESS, address);
+                                            bundle.putString(KEY_MOBILE, mobile);
+                                            bundle.putString(KEY_EMAIL, email);
+                                            bundle.putString(KEY_RENT, rent);
+                                            bundle.putString(KEY_IMAGE, image);
+                                            Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
+                                            intent.putExtra(KEY_BUNDLE, bundle);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .show();
                         }
                     }
 
