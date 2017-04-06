@@ -213,6 +213,7 @@ public class UserChatActivity extends AppCompatActivity {
                                 String digest = response.getString("digest");
                                 String payAddress = response.getString("pay_address");
                                 String price = response.getString("price");
+                                //TODO: mail user with details / screenshot take
                                 new MaterialDialog.Builder(UserChatActivity.this)
                                         .title("Congrats! Contract generated")
                                         .content("Digest: " + digest + "\n\n" +

@@ -594,8 +594,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_logout:
-                logoutUser();
             case R.id.action_clear_session:
                 clearRealmDB();
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
@@ -706,13 +704,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id) {
+            case R.id.nav_chat:
+                startActivity(new Intent(ChatActivity.this, UserChatActivity.class));
+                break;
+            case R.id.nav_settings:
 
-        if (id == R.id.nav_chat) {
-            startActivity(new Intent(ChatActivity.this, UserChatActivity.class));
-        } else if (id == R.id.nav_settings) {
-
-        } else if (id == R.id.nav_push_data) {
-            startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
+                break;
+            case R.id.nav_push_data:
+                startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
+                break;
+//            case R.id.
+            //TODO: add actions here
+            case R.id.action_logout:
+                logoutUser();
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

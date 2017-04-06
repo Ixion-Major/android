@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -12,10 +13,21 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.model.BlockchainData;
+import com.flatmates.ixion.model.BlockchainTable;
 import com.flatmates.ixion.model.Data;
 import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
+import com.flatmates.ixion.utils.Endpoints;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,6 +42,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -51,6 +73,9 @@ import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    @BindView(R.id.fab_openbazaar_search)
+    FloatingActionButton fabOBSearch;
+
     private GoogleMap mMap;
     String area = "";
     String bhk = "";
@@ -68,10 +93,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRefData = database.getReference("Data");
 
+    private static final String TAG = MapsActivity.class.getSimpleName();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ButterKnife.bind(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -79,28 +108,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //TODO: crashes here when you go to VR/userChat activity and come back -> Bundle is null
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
-        if (bundle.getString(KEY_AREA) != null)
-            area = bundle.getString(KEY_AREA).toLowerCase();
-        if (bundle.getString(KEY_BEDROOMS) != null) {
-            if (bundle.getString(KEY_BEDROOMS).length() > 0) {  //TODO: crash due to 0 length in case of null -> was fixed
-                bhk = bundle.getString(KEY_BEDROOMS);
-                bhk = bhk.substring(0, 1);
-            }
-        }
-        if (bundle.getString(KEY_CITY) != null)
-            city = bundle.getString(KEY_CITY).toLowerCase();
-        if (bundle.getString(KEY_STATE) != null)
-            state = bundle.getString(KEY_STATE).toLowerCase();
-        if (bundle.getString(KEY_BUDGET) != null && bundle.getString(KEY_BUDGET).length() > 3) {
-            budget = bundle.getString(KEY_BUDGET);
-            if (budget.contains("-")) {
-                String[] parts = budget.split("-");
-                minBudget = Integer.parseInt(parts[0]);
-                maxBudget = Integer.parseInt(parts[1]);
-            } else {
-                int bud = Integer.parseInt(budget);
-                minBudget = bud - 2000;
-                maxBudget = bud + 2000;
+        if (bundle != null) {
+            try {
+                if (bundle.getString(KEY_AREA) != null)
+                    area = bundle.getString(KEY_AREA).toLowerCase();
+                if (bundle.getString(KEY_BEDROOMS) != null) {
+                    if (bundle.getString(KEY_BEDROOMS).length() > 0) {
+                        bhk = bundle.getString(KEY_BEDROOMS);
+                        bhk = bhk.substring(0, 1);
+                    }
+                }
+                if (bundle.getString(KEY_CITY) != null)
+                    city = bundle.getString(KEY_CITY).toLowerCase();
+                if (bundle.getString(KEY_STATE) != null)
+                    state = bundle.getString(KEY_STATE).toLowerCase();
+                if (bundle.getString(KEY_BUDGET) != null && bundle.getString(KEY_BUDGET).length() > 3) {
+                    budget = bundle.getString(KEY_BUDGET);
+                    if (budget.contains("-")) {
+                        String[] parts = budget.split("-");
+                        minBudget = Integer.parseInt(parts[0]);
+                        maxBudget = Integer.parseInt(parts[1]);
+                    } else {
+                        int bud = Integer.parseInt(budget);
+                        minBudget = bud - 2000;
+                        maxBudget = bud + 2000;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "onCreate: ", e);
             }
         }
 
@@ -132,10 +167,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -164,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             new MaterialDialog.Builder(MapsActivity.this)
                                     .title(name)
-                                    .content("Rent: " + rent + "\nNo. of Rooms: "+ bhk+"\nAddress: " + address)
+                                    .content("Rent: " + rent + "\nNo. of Rooms: " + bhk + "\nAddress: " + address)
                                     .positiveText("SHOW MORE")
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -200,6 +237,155 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+
+    @OnClick(R.id.fab_openbazaar_search)
+    public void openSearchBazaarActivity() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(MapsActivity.this)
+                .title("Fetching Data")
+                .content("Loading latest listings from peers across the world")
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        dialog.show();
+
+        final Intent intent = new Intent(MapsActivity.this, BazaarSearchActivity.class);
+        //TODO: send bundle??
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Endpoints.endpointOBSearch(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: " + response);
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            JSONArray array = jsonResponse.getJSONArray("hits");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                String objectID = object.getString("objectID");
+                                Log.i(TAG, "onResponse: objectID: " + objectID);
+
+                                String contractID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getString("contract_id");
+                                Log.i(TAG, "onResponse: contract_id: " + contractID);
+
+                                String GUID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("id")
+                                        .getString("guid");
+                                Log.i(TAG, "onResponse: guid: " + GUID);
+
+                                String title = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("title");
+                                Log.i(TAG, "onResponse: title: " + title);
+
+                                String description = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("description");
+                                Log.i(TAG, "onResponse: desc: " + description);
+
+                                String price = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("price");
+                                String currency = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("currency_code");
+                                Log.i(TAG, "onResponse: price: " + price + " " + currency);
+
+                                String imageHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONArray("image_hashes").getString(0);
+                                Log.i(TAG, "onResponse: imageHash: " + imageHash);
+
+                                String vendorName = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("name");
+                                Log.i(TAG, "onResponse: vendor name: " + vendorName);
+
+                                String vendorHeaderHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("header_hash");
+                                Log.i(TAG, "onResponse: vendor header hash: " + vendorHeaderHash);
+                                String vendorLocation = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("location");
+                                Log.i(TAG, "onResponse: vendor location: " + vendorLocation);
+
+                                BlockchainData data = new BlockchainData();
+                                data.setGUID(GUID);
+                                data.setContractID(contractID);
+                                data.setDescription(description);
+                                data.setImageHash(imageHash);
+                                data.setObjectID(objectID);
+                                data.setPrice(price);
+                                data.setTitle(title);
+                                data.setVendorHeaderHash(vendorHeaderHash);
+                                data.setVendorLocation(vendorLocation);
+                                data.setVendorName(vendorName);
+                                data.setCurrency(currency);
+
+                                try {
+                                    getContentResolver().insert(BlockchainTable.CONTENT_URI,
+                                            BlockchainTable.getContentValues(data, true));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: ", error);
+                        dialog.dismiss();
+                        new MaterialDialog.Builder(MapsActivity.this)
+                                .title("Something went wrong")
+                                .content("Couldn't fetch data from the Blockchain")
+                                .progress(true, 0)
+                                .cancelable(false)
+                                .build()
+                                .show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("token", Endpoints.SEARCH_TOKEN);
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("q", "ixion");    //TODO: think about this
+                return params;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        InitApplication.getInstance().addToQueue(request);
+    }
+
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -215,12 +401,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void showMarker(String name, Double lati, Double loni) {
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
-
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 14.0f));
     }
 
-    private void fetchData(final String match) {
 
+    private void fetchData(final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -240,16 +425,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 if (!dataFound) {
+                    //TODO: all these will show multiple dialogs if more than one filters are not found
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
                             .content("No result found")
-                            .positiveText("OK")
+                            .positiveText("Search De-Network")
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    openSearchBazaarActivity();
+                                }
+                            })
+                            .negativeText("GO BACK")
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                     onBackPressed();
                                 }
                             })
+                            .build()
                             .show();
                 }
             }
@@ -261,8 +455,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void fetchBhk(final String match) {
 
+    private void fetchBhk(final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -284,15 +478,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
-                            .positiveText("OK")
                             .title("Oops!")
                             .content("No result found")
+                            .positiveText("Search De-Network")
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    openSearchBazaarActivity();
+                                }
+                            })
+                            .negativeText("GO BACK")
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                     onBackPressed();
                                 }
                             })
+                            .build()
                             .show();
                 }
             }
@@ -304,8 +506,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void fetchAB(final String match, final String m_bhk) {
 
+    private void fetchAB(final String match, final String m_bhk) {
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -330,14 +532,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
-                            .positiveText("OK")
                             .content("No result found")
+                            .positiveText("Search De-Network")
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    openSearchBazaarActivity();
+                                }
+                            })
+                            .negativeText("GO BACK")
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                     onBackPressed();
                                 }
                             })
+                            .build()
                             .show();
                 }
             }
@@ -347,8 +557,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("MainActivity", databaseError.getDetails());
             }
         });
-
     }
+
 
     private void fetchBudget(final int min, final int max) {
 
@@ -374,14 +584,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (!dataFound) {
                     new MaterialDialog.Builder(MapsActivity.this)
                             .title("Oops!")
-                            .positiveText("OK")
                             .content("No result found")
+                            .positiveText("Search De-Network")
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    openSearchBazaarActivity();
+                                }
+                            })
+                            .negativeText("GO BACK")
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                     onBackPressed();
                                 }
                             })
+                            .build()
                             .show();
                 }
             }
@@ -394,8 +612,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void fetchBUDAREA(final int min, final int max, final String match) {
 
+    private void fetchBUDAREA(final int min, final int max, final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -419,14 +637,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (!dataFound) {
                         new MaterialDialog.Builder(MapsActivity.this)
                                 .title("Oops!")
-                                .positiveText("OK")
                                 .content("No result found")
+                                .positiveText("Search De-Network")
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        openSearchBazaarActivity();
+                                    }
+                                })
+                                .negativeText("GO BACK")
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                         onBackPressed();
                                     }
                                 })
+                                .build()
                                 .show();
                     }
                 }
@@ -437,6 +663,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("MainActivity", databaseError.getDetails());
             }
         });
-
     }
+
+
 }

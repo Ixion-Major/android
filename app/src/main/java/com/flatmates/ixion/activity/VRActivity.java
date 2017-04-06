@@ -43,12 +43,6 @@ public class VRActivity extends Activity {
 
         // Make the source link clickable.
 
-        try {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        } catch (Exception e) {
-            Log.e(TAG, "onCreate: ", e);
-        }
-
         panoWidgetView = (VrPanoramaView) findViewById(R.id.pano_view);
         panoWidgetView.setEventListener(new ActivityEventListener());
 
@@ -76,7 +70,7 @@ public class VRActivity extends Activity {
     private void handleIntent(Intent intent) {
         // Determine if the Intent contains a file to load.
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            Log.i(TAG, "ACTION_VIEW Intent recieved");
+            Log.i(TAG, "ACTION_VIEW Intent received");
 
             fileUri = intent.getData();
             if (fileUri == null) {
