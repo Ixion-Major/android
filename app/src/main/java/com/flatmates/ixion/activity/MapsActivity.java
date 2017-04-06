@@ -59,8 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String rent = "";
     String name = "";
     String budget = "";
-    int min_budget;
-    int max_budget;
+    int minBudget;
+    int maxBudget;
     double lat;
     double lon;
     boolean dataFound;
@@ -95,12 +95,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             budget = bundle.getString(KEY_BUDGET);
             if (budget.contains("-")) {
                 String[] parts = budget.split("-");
-                min_budget = Integer.parseInt(parts[0]);
-                max_budget = Integer.parseInt(parts[1]);
+                minBudget = Integer.parseInt(parts[0]);
+                maxBudget = Integer.parseInt(parts[1]);
             } else {
                 int bud = Integer.parseInt(budget);
-                min_budget = bud - 2000;
-                max_budget = bud + 2000;
+                minBudget = bud - 2000;
+                maxBudget = bud + 2000;
             }
         }
 
@@ -112,22 +112,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             fetchData(area);
         else if (!state.equals("") && budget.equals("") && bhk.equals(""))
             fetchData(state);
-        else if (!bhk.equals("") && budget.equals(""))
-            fetchBhk(bhk);
+        else if (!budget.equals("") && !area.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, area);
+        else if (!budget.equals("") && !city.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, city);
+        else if (!budget.equals("") && !state.equals(""))
+            fetchBUDAREA(minBudget, maxBudget, state);
         else if (!budget.equals("") && city.equals(""))
-            fetchBudget(min_budget, max_budget);
+            fetchBudget(minBudget, maxBudget);
         else if (!area.equals("") && !bhk.equals(""))
             fetchAB(area, bhk);
         else if (!city.equals("") && !bhk.equals(""))
             fetchAB(city, bhk);
         else if (!state.equals("") && !bhk.equals(""))
             fetchAB(state, bhk);
-        else if (!budget.equals("") && !area.equals(""))
-            fetchBUDAREA(min_budget, max_budget, area);
-        else if (!budget.equals("") && !city.equals(""))
-            fetchBUDAREA(min_budget, max_budget, city);
-        else if (!budget.equals("") && !state.equals(""))
-            fetchBUDAREA(min_budget, max_budget, state);
+        else if (!bhk.equals(""))
+            fetchBhk(bhk);
+
 
     }
 
@@ -139,6 +140,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                double lon = marker.getPosition().longitude;
+                Query recentPostsQuery = myRefData.orderByChild("lon").equalTo(String.valueOf(lon));
+                recentPostsQuery.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Data data = snapshot.getValue(Data.class);
+
+                            final String area = data.getArea();
+                            final String bhk = data.getBhk();
+                            final String rent = data.getRent();
+                            final String city = data.getCity();
+                            final String state = data.getState();
+                            final String name = data.getName();
+                            final String email = data.getEmail();
+                            final String mobile = data.getMobile();
+                            final String address = data.getAddress();
+                            final String image = data.getPurl();
+
+                            new MaterialDialog.Builder(MapsActivity.this)
+                                    .title(name)
+                                    .content("Rent: " + rent + "\nNo. of Rooms: "+ bhk+"\nAddress: " + address)
+                                    .positiveText("SHOW MORE")
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString(KEY_AREA, area);
+                                            bundle.putString(KEY_BEDROOMS, bhk);
+                                            bundle.putString(KEY_CITY, city);
+                                            bundle.putString(KEY_STATE, state);
+                                            bundle.putString(KEY_NAME, name);
+                                            bundle.putString(KEY_ADDRESS, address);
+                                            bundle.putString(KEY_MOBILE, mobile);
+                                            bundle.putString(KEY_EMAIL, email);
+                                            bundle.putString(KEY_RENT, rent);
+                                            bundle.putString(KEY_IMAGE, image);
+                                            Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
+                                            intent.putExtra(KEY_BUNDLE, bundle);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                return true;
+            }
+        });
     }
 
     @Override
@@ -157,54 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 10.0f));
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                double lon = marker.getPosition().longitude;
-                Query recentPostsQuery = myRefData.orderByChild("lon").equalTo(String.valueOf(lon));
-                recentPostsQuery.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            Data data = snapshot.getValue(Data.class);
 
-                            String area = data.getArea();
-                            String bhk = data.getBhk();
-                            String rent = data.getRent();
-                            String city = data.getCity();
-                            String state = data.getState();
-                            String name = data.getName();
-                            String email = data.getEmail();
-                            String mobile = data.getMobile();
-                            String address = data.getAddress();
-                            String image = data.getPurl();
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString(KEY_AREA, area);
-                            bundle.putString(KEY_BEDROOMS, bhk);
-                            bundle.putString(KEY_CITY, city);
-                            bundle.putString(KEY_STATE, state);
-                            bundle.putString(KEY_NAME, name);
-                            bundle.putString(KEY_ADDRESS, address);
-                            bundle.putString(KEY_MOBILE, mobile);
-                            bundle.putString(KEY_EMAIL, email);
-                            bundle.putString(KEY_RENT, rent);
-                            bundle.putString(KEY_IMAGE, image);
-                            Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
-                            intent.putExtra(KEY_BUNDLE, bundle);
-                            startActivity(intent);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                return true;
-            }
-        });
     }
 
     private void fetchData(final String match) {
@@ -304,10 +316,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String map_state = data.getState();
                     String map_rent = data.getRent();
                     String map_bhk = data.getBhk();
+                    map_bhk = map_bhk.substring(0, 1);
                     name = data.getName();
                     lat = Double.parseDouble(data.getLat());
                     lon = Double.parseDouble(data.getLon());
-                    System.out.println(map_city);
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
                         if (m_bhk.equals(map_bhk)) {
                             showMarker(name, lat, lon);
