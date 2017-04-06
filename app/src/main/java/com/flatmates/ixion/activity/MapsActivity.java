@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -362,8 +364,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             new MaterialDialog.Builder(MapsActivity.this)
                                     .title(name)
                                     .content("Rent: " + rent + "\nNo. of Rooms: "+ bhk+"\nAddress: " + address)
-                                    .positiveText("SHOW MORE")
-                                    .negativeText("SHOW NEARBY PLACES")
+                                    .positiveText("MORE")
+                                    .negativeText("PLACES")
+                                    .neutralText("NAVIGATION")
+                                    .btnStackedGravity(GravityEnum.START)
+                                    .buttonsGravity(GravityEnum.START)
+                                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                                    Uri.parse("http://maps.google.com/maps?saddr="+latitude+","+longitude+"&daddr="+lat+","+lon));
+                                            startActivity(intent);
+                                        }
+                                    })
                                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
