@@ -8,6 +8,7 @@ public class Endpoints {
 
     private static final String BASE_URL = "https://ixion-backend-python1049.herokuapp.com";
     public static final String AUTH_TOKEN = "jbfsj32094bsjab0*)&*)&)*&3bkdsjs&*&kbdk";
+    public static final String SEARCH_TOKEN = "jdf34bj#*&$bcj[kbb>?H)U(#*)QBjbsf&*372";
 
 
     public static String endpointChatbot() {
@@ -42,8 +43,15 @@ public class Endpoints {
         return "https://proofofexistence.com/api/v1/register?d=" + sha256;
     }
 
+    //TODO: store all contract SHAs
     public static String endpointContractStatus(String sha256) {
         return "https://proofofexistence.com/api/v1/status?d=" + sha256;
     }
+
+
+    public static String endpointOBSearch() {
+        return "https://ixion-search.herokuapp.com/v1/ob/search";
+    }
+
 
 }

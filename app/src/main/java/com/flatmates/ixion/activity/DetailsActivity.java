@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -124,6 +125,17 @@ public class DetailsActivity extends AppCompatActivity {
         intent.putExtra(KEY_ADDRESS, address);
         intent.putExtra(KEY_MOBILE, mobile);
         startActivity(intent);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                DetailsActivity.this.finish();
+        }
+        return true;
     }
 
 }

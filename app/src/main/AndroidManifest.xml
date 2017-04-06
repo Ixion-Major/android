@@ -61,6 +61,19 @@
             android:name=".activity.PushDataActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
 
+        <activity android:name=".activity.helper.PrivacyPolicyActivity" />
+
+        <activity android:name=".activity.helper.AboutUsActivity" />
+
+        <activity
+            android:name=".activity.BazaarSearchActivity"
+            android:parentActivityName=".activity.chat.ChatActivity" />
+
+        <provider
+            android:name=".data.DataProvider"
+            android:authorities="com.flatmates.ixion"
+            android:exported="false" />
+
     </application>
 
 </manifest>
