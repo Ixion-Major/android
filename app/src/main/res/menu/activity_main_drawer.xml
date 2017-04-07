@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_home"
             android:title="@string/list_your_property" />
         <item
+            android:id="@+id/nav_decentralised_search"
+            android:icon="@drawable/ic_decentralised"
+            android:title="@string/decentralised_search" />
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="@string/goto_settings" />

@@ -1,5 +1,6 @@
 package com.flatmates.ixion.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -83,9 +84,12 @@ import static com.flatmates.ixion.utils.Constants.KEY_RENT;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+
+    //TODO: show loading dialog to user until results are shown on map
 
     @BindView(R.id.fab_openbazaar_search)
     FloatingActionButton fabOBSearch;
@@ -104,9 +108,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double latitude, longitude;
     boolean dataFound;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    public static final int LOCATION_PERMISSION_REQUEST = 1001;
 
     private static Location mLastLocation;
     protected LocationRequest mLocationRequest;
+    MaterialDialog placesDialog;
 
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
@@ -133,7 +139,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
         }
 
-        //TODO: crashes here when you go to VR/userChat activity and come back -> Bundle is null
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
         if (bundle != null) {
             try {
@@ -222,23 +227,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "Google Play Services is not available.",
                     Toast.LENGTH_LONG)
                     .show();
+        } finally {
+            placesDialog.dismiss();
         }
     }
 
     private void displayLocation() {
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Snackbar.make(findViewById(android.R.id.content), "Please provide location permission.",
-                    Snackbar.LENGTH_INDEFINITE).show();
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Snackbar.make(findViewById(android.R.id.content),
+                    "Please provide location permission",
+                    Snackbar.LENGTH_LONG)
+                    .show();
             return;
         }
+
         try {
             startLocationUpdates();
         } catch (Exception e) {
@@ -252,13 +255,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng apna = new LatLng(latitude, longitude);
             mMap.addMarker(new MarkerOptions().position(apna).title("You are here")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-
         } else {
-            Toast.makeText(this, "Couldn't get current location. Make sure location is enabled on the device",
+            //TODO: this is shown every time. REMOVE THIS
+            Toast.makeText(this, "Current location not available. Fetching previous location.",
                     Toast.LENGTH_SHORT).show();
             latitude = 28.567333;
             longitude = 77.318373;
-
         }
     }
 
@@ -299,10 +301,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkPlayServicesAvailablity();
     }
 
+
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
+
 
     @Override
     public void onConnected(Bundle arg0) {
@@ -315,28 +319,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         displayLocation();
     }
 
-    protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(this, "Cant update location. Provide storage permission.", Toast.LENGTH_SHORT).show();
 
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                mLastLocation = location;
-            }
-        });
+    protected void startLocationUpdates() {
+        ActivityCompat.requestPermissions(MapsActivity.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_PERMISSION_REQUEST);
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    //TODO: move relevant code here
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    if (ActivityCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                            mLocationRequest,
+                            new LocationListener() {
+                                @Override
+                                public void onLocationChanged(Location location) {
+                                    mLastLocation = location;
+                                }
+                            });
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+        }
+    }
+
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -353,6 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
 
     @Override
     public void onConnectionSuspended(int arg0) {
@@ -407,6 +432,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            placesDialog = new MaterialDialog.Builder(MapsActivity.this)
+                                                    .content("Fetching places")
+                                                    .progress(true, 0)
+                                                    .build();
+                                            placesDialog.show();
                                             showNearbyPlaces(lat, lon);
                                         }
                                     })
@@ -435,7 +465,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        databaseError.toException().printStackTrace();
                     }
                 });
 
@@ -604,6 +634,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editor.putBoolean(IS_USER_LOGGED_IN, true);
         editor.apply();
     }
+
 
     private void showMarker(String name, Double lati, Double loni) {
         LatLng apna = new LatLng(lati, loni);

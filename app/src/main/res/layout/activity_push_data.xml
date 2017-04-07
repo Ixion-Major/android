@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_push_data"
     android:layout_width="match_parent"
@@ -13,7 +14,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1">
 
         <LinearLayout
@@ -31,252 +32,93 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_Name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Name"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Name :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_Name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter your name"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_EMail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Email"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="E-Mail :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_EMail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter your E-Mail"
-                    android:inputType="textEmailAddress"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_PhoneNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Contact Number"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Phone No :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_PhoneNo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter phone no."
-                    android:inputType="phone"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Title"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="BHK :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_BHK"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter bhk"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Description"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Rent :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_Rent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter Rent"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_BHK"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="BHK"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Address :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_Address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter your address"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_Rent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Price/Rent"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Area :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_Area"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter Area"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_Address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Address"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="city :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/EditText_city"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter city"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_Area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:hint="Area"
+                app:met_floatingLabel="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="State :"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="City"
+                app:met_floatingLabel="normal" />
 
-                <EditText
-                    android:id="@+id/EditText_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:hint="Enter state"
-                    android:textSize="14sp" />
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/EditText_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="State"
+                app:met_floatingLabel="normal" />
 
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <Switch
+        android:id="@+id/switch_upload_decentralised"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:text="@string/upload_to_decentral_network" />
 
     <Button
         android:id="@+id/btn_submit"

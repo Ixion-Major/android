@@ -43,4 +43,6 @@
     <string name="email_id">Email id: </string>
     <string name="list_your_property">List your property</string>
     <string name="create_contract">Create Contract</string>
+    <string name="decentralised_search">Go Decentralised</string>
+    <string name="upload_to_decentral_network">Upload to Decentral market?</string>
 </resources>
