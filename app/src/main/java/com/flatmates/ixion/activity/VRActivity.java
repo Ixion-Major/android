@@ -138,7 +138,7 @@ public class VRActivity extends Activity {
                     || fileInformation[0] == null || fileInformation[0].first == null) {
                 AssetManager assetManager = getAssets();
                 try {
-                    istr = assetManager.open("andes.jpg");
+                    istr = assetManager.open("image2.jpg");
                     panoOptions = new VrPanoramaView.Options();
                     panoOptions.inputType = Options.TYPE_MONO;
                 } catch (IOException e) {
