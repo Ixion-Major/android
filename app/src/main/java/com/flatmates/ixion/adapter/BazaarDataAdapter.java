@@ -11,10 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.utils.Endpoints;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
         holder.textviewPrice.setText(dataArrayList.get(holder.getAdapterPosition()).getCurrency() + " " +
                 dataArrayList.get(holder.getAdapterPosition()).getPrice());
         holder.textviewTitle.setText(dataArrayList.get(holder.getAdapterPosition()).getTitle());
-        Picasso.with(context)
+        Glide.with(context)
                 .load(Endpoints.endpointFetchImage(
                         dataArrayList.get(holder.getAdapterPosition()).getGUID(),
                         dataArrayList.get(holder.getAdapterPosition()).getImageHash()))
