@@ -55,8 +55,13 @@ public class Endpoints {
     }
 
 
-    public static String endpointCreateListing(){
-        return NGROK_BASE_URL +"/api/v1/contracts";
+    public static String endpointCreateListing() {
+        return NGROK_BASE_URL + "/api/v1/contracts";
+    }
+
+
+    public static String endpointFetchImage(String guid, String hash) {
+        return NGROK_BASE_URL + "/api/v1/get_image?guid=" + guid + "&hash=" + hash;
     }
 
 }

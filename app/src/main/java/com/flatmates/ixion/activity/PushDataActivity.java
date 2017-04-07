@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -39,14 +40,33 @@ public class PushDataActivity extends AppCompatActivity {
     Button buttonSubmit;
     @BindView(R.id.switch_upload_decentralised)
     Switch switchUploadDecentralised;
-
-    MaterialEditText lon, lat, etname, etemail, etphone, etaddress,
-            etrent, etbhk, etcity, etarea, etstate, etTitle, etDescription;
+    @BindView(R.id.EditText_Name)
+    MaterialEditText etname;
+    @BindView(R.id.EditText_EMail)
+    MaterialEditText etemail;
+    @BindView(R.id.EditText_PhoneNo)
+    MaterialEditText etphone;
+    @BindView(R.id.EditText_Address)
+    MaterialEditText etaddress;
+    @BindView(R.id.EditText_Rent)
+    MaterialEditText etrent;
+    @BindView(R.id.EditText_BHK)
+    MaterialEditText etbhk;
+    @BindView(R.id.EditText_city)
+    MaterialEditText etcity;
+    @BindView(R.id.EditText_Area)
+    MaterialEditText etarea;
+    @BindView(R.id.EditText_state)
+    MaterialEditText etstate;
+    @BindView(R.id.EditText_title)
+    MaterialEditText etTitle;
+    @BindView(R.id.EditText_desc)
+    MaterialEditText etDescription;
 
     String lon_str, lat_str;
     Data data;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRefUserData = database.getReference("Data");
+    DatabaseReference myRefUserData = database.getReference("UploadedProperties");
 
     private static final String TAG = PushDataActivity.class.getSimpleName();
 
@@ -64,19 +84,7 @@ public class PushDataActivity extends AppCompatActivity {
             Log.e(TAG, "onCreate: ", e);
         }
 
-        //TODO: get lat lon from address
-
-        etname = (MaterialEditText) findViewById(R.id.EditText_Name);
-        etemail = (MaterialEditText) findViewById(R.id.EditText_EMail);
-        etphone = (MaterialEditText) findViewById(R.id.EditText_PhoneNo);
-        etaddress = (MaterialEditText) findViewById(R.id.EditText_Address);
-        etrent = (MaterialEditText) findViewById(R.id.EditText_Rent);
-        etcity = (MaterialEditText) findViewById(R.id.EditText_city);
-        etarea = (MaterialEditText) findViewById(R.id.EditText_Area);
-        etstate = (MaterialEditText) findViewById(R.id.EditText_state);
-        etTitle = (MaterialEditText) findViewById(R.id.EditText_title);
-        etDescription = (MaterialEditText) findViewById(R.id.EditText_desc);
-        etbhk = (MaterialEditText) findViewById(R.id.EditText_BHK);
+        //TODO: get lat lon from address -> GeoEncoding, street view
 
     }
 
@@ -94,12 +102,17 @@ public class PushDataActivity extends AppCompatActivity {
         data.setCity(etcity.getText().toString().trim());
         data.setArea(etarea.getText().toString().trim());
         data.setState(etstate.getText().toString().trim());
+        data.setBhk(etbhk.getText().toString() + "bhk");
 //                System.out.println(lon_str+"  "+lat_str);
-//
-//        myRefUserData.push().setValue(data);
 
-        if (switchUploadDecentralised.isChecked()) {
+        //TODO: Check for correct input before pushing
+        myRefUserData.push().setValue(data);
+
+        if (switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
+                && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")) {
             uploadToBlockChain();
+        } else {
+            Toast.makeText(this, "Please fill Title, description and BHK", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -111,12 +124,17 @@ public class PushDataActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.i(TAG, "onResponse: " + response);
+                        if (response.contains("true"))
+                            Toast.makeText(PushDataActivity.this, "Successfully created contract listing",
+                                    Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: ", error);
+                        Toast.makeText(PushDataActivity.this, "Couldn't create a contract",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }) {
             @Override
@@ -135,7 +153,8 @@ public class PushDataActivity extends AppCompatActivity {
                 params.put("est_delivery_domestic", "7");
                 params.put("est_delivery_international", "15");
                 params.put("keywords", "['ixion']");
-                params.put("category", "['" + etbhk.getText().toString() + "', '" + etcity.getText().toString() + "']");
+                params.put("category", "['" + etbhk.getText().toString() + "bhk" + "', '"
+                        + etcity.getText().toString() + "']");
                 params.put("terms_conditions", "");
                 params.put("returns", "");
                 params.put("shipping_currency_code", "INR");
@@ -146,7 +165,6 @@ public class PushDataActivity extends AppCompatActivity {
                 params.put("sku", "");
                 params.put("images", "2e541a02e89c532d726d95e62389c721563cdd29");   //TODO: upload image api
                 params.put("moderators", "['1010c55065e1248ce55485b92f7b3cf408b2c9aa']");
-
 
                 return params;
             }

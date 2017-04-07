@@ -43,6 +43,7 @@
                 android:id="@+id/EditText_EMail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
                 android:hint="Email"
                 app:met_floatingLabel="normal" />
 
@@ -50,6 +51,7 @@
                 android:id="@+id/EditText_PhoneNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="phone"
                 android:hint="Contact Number"
                 app:met_floatingLabel="normal" />
 
@@ -72,6 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="BHK"
+                android:inputType="number"
                 app:met_floatingLabel="normal" />
 
             <com.rengwuxian.materialedittext.MaterialEditText
@@ -79,6 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Price/Rent"
+                android:inputType="number"
                 app:met_floatingLabel="normal" />
 
             <com.rengwuxian.materialedittext.MaterialEditText

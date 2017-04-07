@@ -1,14 +1,20 @@
 package com.flatmates.ixion.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.model.BlockchainData;
+import com.flatmates.ixion.utils.Endpoints;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,12 +48,27 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
 
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
+
         holder.textviewOwner.setText(dataArrayList.get(holder.getAdapterPosition()).getVendorName());
         holder.textviewDescription.setText(dataArrayList.get(holder.getAdapterPosition()).getDescription());
         holder.textviewPrice.setText(dataArrayList.get(holder.getAdapterPosition()).getCurrency() + " " +
                 dataArrayList.get(holder.getAdapterPosition()).getPrice());
         holder.textviewTitle.setText(dataArrayList.get(holder.getAdapterPosition()).getTitle());
+        Picasso.with(context)
+                .load(Endpoints.endpointFetchImage(
+                        dataArrayList.get(holder.getAdapterPosition()).getGUID(),
+                        dataArrayList.get(holder.getAdapterPosition()).getImageHash()))
+                .error(context.getResources().getDrawable(R.drawable.ic_loading))
+                .into(holder.imageviewProperty);
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: open new activity
+                Toast.makeText(context, "Info:\n" + dataArrayList.get(holder.getAdapterPosition()).getGUID()
+                        + "\n" + dataArrayList.get(holder.getAdapterPosition()).getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
@@ -57,7 +78,7 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.textview_owner)
         TextView textviewOwner;
@@ -67,8 +88,12 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
         TextView textviewPrice;
         @BindView(R.id.textview_title)
         TextView textviewTitle;
+        @BindView(R.id.imageview_property)
+        ImageView imageviewProperty;
+        @BindView(R.id.linearlayout_property_item)
+        LinearLayout linearLayout;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
