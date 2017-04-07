@@ -1,26 +1,35 @@
 package com.flatmates.ixion.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.activity.chat.UserChatActivity;
 import com.flatmates.ixion.utils.Constants;
 import com.google.vr.sdk.widgets.pano.VrPanoramaView;
-import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_AREA;
@@ -48,11 +57,13 @@ public class DetailsActivity extends AppCompatActivity {
     //    @BindView(R.id.mobile)
 //    TextView txt_mobile;
     @BindView(R.id.image_thumb)
-    ImageView img_thumb;
+    CircleImageView img_thumb;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab_chat)
     FloatingActionButton fabChat;
+    @BindView(R.id.image_background)
+    LinearLayout linearLayout;
 
     String area;
     String bhk;
@@ -88,11 +99,8 @@ public class DetailsActivity extends AppCompatActivity {
         address = bundle.getString(KEY_ADDRESS);
         image = bundle.getString(KEY_IMAGE);
 
-//        new AlertDialog.Builder(this)
-//                .setTitle("Information")
-//                .setMessage("Area: " + area + "\nRent: " + rent + "\nCity: " + city +
-//                        "\nState: " + state + "\nSize: " + bhk +name+email+mobile+address+image)
-//                .show();
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+
 
         txt_name.setText(name);
         txt_address.setText(address);
@@ -101,10 +109,31 @@ public class DetailsActivity extends AppCompatActivity {
 //        txt_mobile.setText(mobile);
         txt_email.setText(email);
 
-        Picasso.with(this)
+        Glide.with(this)
                 .load(image)
-                .placeholder(R.mipmap.ic_launcher)
-                .fit()
+                .placeholder(getDrawable(R.mipmap.ic_launcher))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate()
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model,
+                                                   Target<GlideDrawable> target,
+                                                   boolean isFromMemoryCache, boolean isFirstResource) {
+                        Bitmap bitmap = ((GlideBitmapDrawable) resource.getCurrent()).getBitmap();
+                        Palette palette = Palette.generate(bitmap);
+                        int defaultColor = 0xFF333333;
+                        int color = palette.getMutedColor(defaultColor);
+                        int colorImageBack = palette.getDarkMutedColor(defaultColor);
+                        linearLayout.setBackgroundColor(color);
+                        txt_name.setBackgroundColor(colorImageBack);
+                        return false;
+                    }
+                })
                 .into(img_thumb);
 
         img_thumb.setOnClickListener(new View.OnClickListener() {

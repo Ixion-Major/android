@@ -20,6 +20,12 @@
         <item name="android:typeface">sans</item>
     </style>
 
+    <style name="DetailsTextName">
+        <item name="android:textSize">26sp</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
