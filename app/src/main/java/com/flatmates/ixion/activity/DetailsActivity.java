@@ -110,7 +110,9 @@ public class DetailsActivity extends AppCompatActivity {
         img_thumb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DetailsActivity.this, VRActivity.class));
+                Intent intent = new Intent(DetailsActivity.this, VRActivity.class);
+                intent.putExtra(KEY_BEDROOMS, bhk);
+                startActivity(intent);
 
             }
         });

@@ -20,6 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Random;
+
+import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
+import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 
 /**
  * Created by daman on 21/3/17.
@@ -30,6 +35,7 @@ public class VRActivity extends Activity {
     private VrPanoramaView panoWidgetView;
     public boolean loadImageSuccessful;
     private Uri fileUri;
+    private String bhk = "";
     private VrPanoramaView.Options panoOptions = new VrPanoramaView.Options();
     private ImageLoaderTask backgroundImageLoaderTask;
 
@@ -45,6 +51,8 @@ public class VRActivity extends Activity {
 
         panoWidgetView = (VrPanoramaView) findViewById(R.id.pano_view);
         panoWidgetView.setEventListener(new ActivityEventListener());
+
+        bhk = getIntent().getStringExtra(KEY_BEDROOMS);
 
         // Initial launch of the app or an Activity recreation due to rotation.
         handleIntent(getIntent());
@@ -93,7 +101,7 @@ public class VRActivity extends Activity {
             // Cancel any task from a previous intent sent to this activity.
             backgroundImageLoaderTask.cancel(true);
         }
-        backgroundImageLoaderTask = new ImageLoaderTask();
+        backgroundImageLoaderTask = new ImageLoaderTask(bhk);
         backgroundImageLoaderTask.execute(Pair.create(fileUri, panoOptions));
     }
 
@@ -125,24 +133,70 @@ public class VRActivity extends Activity {
     /**
      * Helper class to manage threading.
      */
-    class ImageLoaderTask extends AsyncTask<Pair<Uri, VrPanoramaView.Options>, Void, Boolean> {
+    private class ImageLoaderTask extends AsyncTask<Pair<Uri, VrPanoramaView.Options>, Void, Boolean> {
+
+        String bhk;
+
+        public ImageLoaderTask(String bhk) {
+            this.bhk = bhk;
+        }
 
         /**
          * Reads the bitmap from disk in the background and waits until it's loaded by pano widget.
          */
         @Override
         protected Boolean doInBackground(Pair<Uri, VrPanoramaView.Options>... fileInformation) {
+
             VrPanoramaView.Options panoOptions = null;  // It's safe to use null VrPanoramaView.Options.
             InputStream istr = null;
+            ArrayList<String> photos = new ArrayList<>();
+            photos.add("pano_0");
+            photos.add("pano_1");
+            photos.add("pano_2");
+            photos.add("pano_3");
+            photos.add("pano_4");
+            photos.add("pano_5");
+            photos.add("pano_6");
+            photos.add("pano_7");
+            photos.add("pano_8");
+            photos.add("pano_9");
             if (fileInformation == null || fileInformation.length < 1
                     || fileInformation[0] == null || fileInformation[0].first == null) {
                 AssetManager assetManager = getAssets();
                 try {
-                    istr = assetManager.open("andes.jpg");
+                    switch (bhk.toLowerCase()) {
+                        case "1bhk":
+                            int choice1 = new Random().nextInt(2);
+                            if (choice1 == 0)
+                                istr = assetManager.open("pano_2.jpg");
+                            else
+                                istr = assetManager.open("pano_8.jpg");
+                            break;
+                        case "2bhk":
+                            int choice2 = new Random().nextInt(2);
+                            if (choice2 == 0)
+                                istr = assetManager.open("pano_0.jpg");
+                            else
+                                istr = assetManager.open("pano_9.jpg");
+                            break;
+                        case "3bhk":
+                            istr = assetManager.open("pano_5.jpg");
+                            break;
+                        case "4bhk":
+                            istr = assetManager.open("pano_3.jpg");
+                            break;
+                    }
                     panoOptions = new VrPanoramaView.Options();
                     panoOptions.inputType = Options.TYPE_MONO;
                 } catch (IOException e) {
                     Log.e(TAG, "Could not decode default bitmap: " + e);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(VRActivity.this, "No VR image found", Toast.LENGTH_LONG).show();
+                            onBackPressed();
+                        }
+                    });
                     return false;
                 }
             } else {
@@ -151,6 +205,13 @@ public class VRActivity extends Activity {
                     panoOptions = fileInformation[0].second;
                 } catch (IOException e) {
                     Log.e(TAG, "Could not load file: " + e);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(VRActivity.this, "No VR image found", Toast.LENGTH_LONG).show();
+                            onBackPressed();
+                        }
+                    });
                     return false;
                 }
             }
