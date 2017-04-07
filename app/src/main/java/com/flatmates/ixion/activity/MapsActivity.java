@@ -256,9 +256,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions().position(apna).title("You are here")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         } else {
-            //TODO: this is shown every time. REMOVE THIS
-            Toast.makeText(this, "Current location not available. Fetching previous location.",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Current location not available. Fetching previous location.",
+//                    Toast.LENGTH_SHORT).show();
             latitude = 28.567333;
             longitude = 77.318373;
         }
