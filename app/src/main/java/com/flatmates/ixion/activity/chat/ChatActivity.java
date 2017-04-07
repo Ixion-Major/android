@@ -31,6 +31,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -39,9 +40,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.BazaarSearchActivity;
 import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
 import com.flatmates.ixion.activity.PushDataActivity;
+import com.flatmates.ixion.model.BlockchainData;
+import com.flatmates.ixion.model.BlockchainTable;
 import com.flatmates.ixion.model.UserMessage;
 import com.flatmates.ixion.utils.Constants;
 import com.flatmates.ixion.utils.Endpoints;
@@ -50,6 +54,7 @@ import com.flatmates.ixion.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.UserDataHandler;
@@ -74,11 +79,11 @@ import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
 import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
-import static com.flatmates.ixion.utils.Constants.KEY_FEATURE;
 import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 import static com.flatmates.ixion.utils.Constants.TO_ASK;
 import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
+
 
 public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnInitListener,
         TextToSpeech.OnUtteranceCompletedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -241,7 +246,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         bundle.putString(KEY_STATE, preferences.getString(KEY_STATE, null));
         bundle.putString(KEY_BEDROOMS, preferences.getString(KEY_BEDROOMS, null));
         bundle.putString(KEY_BUDGET, preferences.getString(KEY_BUDGET, null));
-        bundle.putString(KEY_FEATURE, preferences.getString(KEY_FEATURE, null));
         Intent intent = new Intent(ChatActivity.this, MapsActivity.class);
         intent.putExtra(KEY_BUNDLE, bundle);
         startActivity(intent);
@@ -345,30 +349,17 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String serverResponse) {
-                        final String area, bedrooms, city, state, budget, feature, message;
+                        final String area, bedrooms, city, state, budget, message;
                         try {
                             JSONObject object = new JSONObject(serverResponse);
                             if (object.getString("status").equals("1")) {
                                 Log.i(TAG, "onResponse: " + serverResponse);
-                                /*
-                                {
-                                     "area": null,
-                                     "bedrooms": "3bhk",
-                                     "budget": null,
-                                     "city": null,
-                                     "feature": "hospital",
-                                     "message": "",
-                                     "state": null,
-                                     "status": "1"
-                                 }
-                                 */
-
                                 area = object.getString("area");
                                 city = object.getString("city");
                                 state = object.getString("state");
                                 bedrooms = object.getString("bedrooms");
                                 budget = object.getString("budget");
-                                feature = object.getString("feature");
+
                                 //TODO: use other parameters
 
                                 bundle = new Bundle();
@@ -378,9 +369,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 bundle.putString(KEY_STATE, preferences.getString(KEY_STATE, null));
                                 bundle.putString(KEY_BEDROOMS, preferences.getString(KEY_BEDROOMS, null));
                                 bundle.putString(KEY_BUDGET, preferences.getString(KEY_BUDGET, null));
-                                bundle.putString(KEY_FEATURE, preferences.getString(KEY_FEATURE, null));
 
-                                saveToPreferencesIfNotNull(area, city, state, bedrooms, budget, feature);
+                                saveToPreferencesIfNotNull(area, city, state, bedrooms, budget);
 
                                 Realm realm = null;
                                 try {
@@ -459,12 +449,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void saveToPreferencesIfNotNull(String area, String city, String state,
-                                            String bedrooms, String budget, String feature) {
+                                            String bedrooms, String budget) {
         String toAsk = "";
         SharedPreferences.Editor editor = preferences.edit();
-        if (!Objects.equals(feature, "null"))
-            editor.putString(KEY_FEATURE, feature);
-        else toAsk += "feature ";
         if (!Objects.equals(city, "null"))
             editor.putString(KEY_CITY, city);
         else toAsk += "city  ";
@@ -495,7 +482,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void showServerResponseBubble(String serverResponse) {
 
         String message = "";
-        String area, city, state, bedrooms, budget, feature;
+        String area, city, state, bedrooms, budget;
         try {
             JSONObject response = new JSONObject(serverResponse);
             message = response.getString("message");
@@ -505,8 +492,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             state = response.getString("state");
             bedrooms = response.getString("bedrooms");
             budget = response.getString("budget");
-            feature = response.getString("feature");
-            saveToPreferencesIfNotNull(area, city, state, bedrooms, budget, feature);
+            saveToPreferencesIfNotNull(area, city, state, bedrooms, budget);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -531,8 +517,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     public String getFromPreferences() {
         String response = "";
-        String area, city, state, bedrooms, budget, feature;
-        feature = preferences.getString(KEY_FEATURE, null);
+        String area, city, state, bedrooms, budget;
         area = preferences.getString(KEY_AREA, null);
         city = preferences.getString(KEY_CITY, null);
         bedrooms = preferences.getString(KEY_BEDROOMS, null);
@@ -540,8 +525,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         state = preferences.getString(KEY_STATE, null);
 
         try {
-            if (feature != null && !feature.equals(""))
-                response += feature + " ";
             if (city != null && !city.equals(""))
                 response += city + " ";
             if (budget != null && !budget.equals(""))
@@ -709,21 +692,168 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 startActivity(new Intent(ChatActivity.this, UserChatActivity.class));
                 break;
             case R.id.nav_settings:
-
                 break;
             case R.id.nav_push_data:
                 startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
                 break;
-//            case R.id.
+            case R.id.nav_decentralised_search:
+                openSearchBazaarActivity();
+                break;
             //TODO: add actions here
             case R.id.action_logout:
                 logoutUser();
                 break;
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    public void openSearchBazaarActivity() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(ChatActivity.this)
+                .title("Fetching Data")
+                .content("Loading latest listings from peers across the world")
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        dialog.show();
+
+        final Intent intent = new Intent(ChatActivity.this, BazaarSearchActivity.class);
+        //TODO: send bundle??
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Endpoints.endpointOBSearch(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: " + response);
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            JSONArray array = jsonResponse.getJSONArray("hits");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                String objectID = object.getString("objectID");
+                                Log.i(TAG, "onResponse: objectID: " + objectID);
+
+                                String contractID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getString("contract_id");
+                                Log.i(TAG, "onResponse: contract_id: " + contractID);
+
+                                String GUID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("id")
+                                        .getString("guid");
+                                Log.i(TAG, "onResponse: guid: " + GUID);
+
+                                String title = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("title");
+                                Log.i(TAG, "onResponse: title: " + title);
+
+                                String description = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("description");
+                                Log.i(TAG, "onResponse: desc: " + description);
+
+                                String price = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("price");
+                                String currency = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("currency_code");
+                                Log.i(TAG, "onResponse: price: " + price + " " + currency);
+
+                                String imageHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONArray("image_hashes").getString(0);
+                                Log.i(TAG, "onResponse: imageHash: " + imageHash);
+
+                                String vendorName = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("name");
+                                Log.i(TAG, "onResponse: vendor name: " + vendorName);
+
+                                String vendorHeaderHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("header_hash");
+                                Log.i(TAG, "onResponse: vendor header hash: " + vendorHeaderHash);
+                                String vendorLocation = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("location");
+                                Log.i(TAG, "onResponse: vendor location: " + vendorLocation);
+
+                                BlockchainData data = new BlockchainData();
+                                data.setGUID(GUID);
+                                data.setContractID(contractID);
+                                data.setDescription(description);
+                                data.setImageHash(imageHash);
+                                data.setObjectID(objectID);
+                                data.setPrice(price);
+                                data.setTitle(title);
+                                data.setVendorHeaderHash(vendorHeaderHash);
+                                data.setVendorLocation(vendorLocation);
+                                data.setVendorName(vendorName);
+                                data.setCurrency(currency);
+
+                                try {
+                                    getContentResolver().insert(BlockchainTable.CONTENT_URI,
+                                            BlockchainTable.getContentValues(data, true));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: ", error);
+                        dialog.dismiss();
+                        new MaterialDialog.Builder(ChatActivity.this)
+                                .title("Something went wrong")
+                                .content("Couldn't fetch data from the Blockchain")
+                                .progress(true, 0)
+                                .cancelable(false)
+                                .build()
+                                .show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("token", Endpoints.SEARCH_TOKEN);
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("q", "ixion");    //TODO: think about this
+                return params;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        InitApplication.getInstance().addToQueue(request);
     }
 
 }

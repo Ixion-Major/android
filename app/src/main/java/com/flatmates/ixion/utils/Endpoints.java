@@ -9,6 +9,7 @@ public class Endpoints {
     private static final String BASE_URL = "https://ixion-backend-python1049.herokuapp.com";
     public static final String AUTH_TOKEN = "jbfsj32094bsjab0*)&*)&)*&3bkdsjs&*&kbdk";
     public static final String SEARCH_TOKEN = "jdf34bj#*&$bcj[kbb>?H)U(#*)QBjbsf&*372";
+    private static final String NGROK_BASE_URL = "https://c5cff7d4.ngrok.io";    //TODO: set
 
 
     public static String endpointChatbot() {
@@ -53,5 +54,14 @@ public class Endpoints {
         return "https://ixion-search.herokuapp.com/v1/ob/search";
     }
 
+
+    public static String endpointCreateListing() {
+        return NGROK_BASE_URL + "/api/v1/contracts";
+    }
+
+
+    public static String endpointFetchImage(String guid, String hash) {
+        return NGROK_BASE_URL + "/api/v1/get_image?guid=" + guid + "&hash=" + hash;
+    }
 
 }
