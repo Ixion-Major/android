@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.decentralized.BazaarSearchActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.model.BlockchainTable;
 import com.flatmates.ixion.model.Data;

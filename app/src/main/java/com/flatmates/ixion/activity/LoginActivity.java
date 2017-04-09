@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN = 1;
 
 
+    //TODO: store email and image link to show in nav drawer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.button_login)
     public void loginUser() {
 
-        //TODO: logging in dialogs
+        //TODO: not showing logging-in dialogs
 
         final String email = edittextEmail.getText().toString().trim();
         final String password = edittextPassword.getText().toString().trim();

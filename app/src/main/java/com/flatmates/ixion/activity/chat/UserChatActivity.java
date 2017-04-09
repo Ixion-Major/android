@@ -43,6 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
+import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
 import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
 import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
@@ -73,10 +74,16 @@ public class UserChatActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(UserChatActivity.this);
-        root = FirebaseDatabase.getInstance().getReference()
-                .child("chatroom")
-                .child(getIntent().getStringExtra(KEY_ADDRESS) + getIntent().getStringExtra(KEY_MOBILE));
-        username = preferences.getString(USER_EMAIL, "");
+        username = preferences.getString(USER_EMAIL, "").replace(".", "_@_");
+        if (getIntent().getStringExtra(KEY_EMAIL) == null)
+            root = FirebaseDatabase.getInstance().getReference()
+                    .child("chatroom")
+                    .child("singhdaman4321@gmail_@_com" + "," + username);
+        else
+            root = FirebaseDatabase.getInstance().getReference()
+                    .child("chatroom")
+                    .child(getIntent().getStringExtra(KEY_EMAIL).replace(".", "_@_") + "," + username);
+
         //TODO: need a separate chat panel for owners where they get pings on receiving message
 
         try {
@@ -84,6 +91,7 @@ public class UserChatActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "onCreate: ", e);
         }
+        setTitle("Private Chat");
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +151,7 @@ public class UserChatActivity extends AppCompatActivity {
         Iterator i = dataSnapshot.getChildren().iterator();
         while (i.hasNext()) {
             String chatMsg = (String) ((DataSnapshot) i.next()).getValue();
-            String chatUsername = (String) ((DataSnapshot) i.next()).getValue();
+            String chatUsername = ((String) ((DataSnapshot) i.next()).getValue()).split("@")[0];
             tv.append(chatUsername + " :-  " + chatMsg + "\n");
             et.setText("");
         }
@@ -177,11 +185,14 @@ public class UserChatActivity extends AppCompatActivity {
                             }
                         })
                         .title("Create Contract")
-                        .content("This chat will be deleted after creating a contract")
+                        .content("This chat will be deleted after you've paid for the contract")
                         .positiveText("Create")
                         .negativeText("Exit")
                         .build()
                         .show();
+                break;
+            case android.R.id.home:
+                onBackPressed();
         }
 
 

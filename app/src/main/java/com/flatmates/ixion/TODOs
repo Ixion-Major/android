@@ -1,3 +1,6 @@
 1. Loading dialogs in login activity
 2. loading data dialog before launch of maps activity
 3. get user's current location
+4. IMP: get user query before decentralized search (only city and bhk) and show relevant results
+5. ALL CHAT SHOW
+6. UI set for BCDetailsActivity

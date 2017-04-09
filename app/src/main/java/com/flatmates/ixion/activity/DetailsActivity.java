@@ -2,16 +2,14 @@ package com.flatmates.ixion.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,7 +22,6 @@ import com.bumptech.glide.request.target.Target;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.activity.chat.UserChatActivity;
 import com.flatmates.ixion.utils.Constants;
-import com.google.vr.sdk.widgets.pano.VrPanoramaView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -111,7 +108,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(image)
-                .placeholder(getDrawable(R.mipmap.ic_launcher))
+                .placeholder(getResources().getDrawable(R.mipmap.ic_launcher))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .dontAnimate()
                 .listener(new RequestListener<String, GlideDrawable>() {
