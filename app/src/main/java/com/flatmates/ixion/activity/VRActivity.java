@@ -35,7 +35,7 @@ public class VRActivity extends Activity {
     private VrPanoramaView panoWidgetView;
     public boolean loadImageSuccessful;
     private Uri fileUri;
-    private String bhk = "";
+    private String name = "";
     private VrPanoramaView.Options panoOptions = new VrPanoramaView.Options();
     private ImageLoaderTask backgroundImageLoaderTask;
 
@@ -52,7 +52,8 @@ public class VRActivity extends Activity {
         panoWidgetView = (VrPanoramaView) findViewById(R.id.pano_view);
         panoWidgetView.setEventListener(new ActivityEventListener());
 
-        bhk = getIntent().getStringExtra(KEY_BEDROOMS);
+        name = getIntent().getStringExtra(KEY_NAME);
+        name = name.substring(0, 1).toLowerCase();
 
         // Initial launch of the app or an Activity recreation due to rotation.
         handleIntent(getIntent());
@@ -101,7 +102,7 @@ public class VRActivity extends Activity {
             // Cancel any task from a previous intent sent to this activity.
             backgroundImageLoaderTask.cancel(true);
         }
-        backgroundImageLoaderTask = new ImageLoaderTask(bhk);
+        backgroundImageLoaderTask = new ImageLoaderTask(name);
         backgroundImageLoaderTask.execute(Pair.create(fileUri, panoOptions));
     }
 
@@ -149,43 +150,46 @@ public class VRActivity extends Activity {
 
             VrPanoramaView.Options panoOptions = null;  // It's safe to use null VrPanoramaView.Options.
             InputStream istr = null;
-            ArrayList<String> photos = new ArrayList<>();
-            photos.add("pano_0");
-            photos.add("pano_1");
-            photos.add("pano_2");
-            photos.add("pano_3");
-            photos.add("pano_4");
-            photos.add("pano_5");
-            photos.add("pano_6");
-            photos.add("pano_7");
-            photos.add("pano_8");
-            photos.add("pano_9");
             if (fileInformation == null || fileInformation.length < 1
                     || fileInformation[0] == null || fileInformation[0].first == null) {
                 AssetManager assetManager = getAssets();
                 try {
-                    switch (bhk.toLowerCase()) {
-                        case "1bhk":
-                            int choice1 = new Random().nextInt(2);
-                            if (choice1 == 0)
-                                istr = assetManager.open("pano_2.jpg");
-                            else
-                                istr = assetManager.open("pano_8.jpg");
-                            break;
-                        case "2bhk":
-                            int choice2 = new Random().nextInt(2);
-                            if (choice2 == 0)
-                                istr = assetManager.open("pano_0.jpg");
-                            else
-                                istr = assetManager.open("pano_9.jpg");
-                            break;
-                        case "3bhk":
-                            istr = assetManager.open("pano_5.jpg");
-                            break;
-                        case "4bhk":
-                            istr = assetManager.open("pano_3.jpg");
-                            break;
-                    }
+                    if (name.equals("a") || name.equals("b"))
+                        istr = assetManager.open("pano_0.jpg");
+                    else if (name.equals("c"))
+                        istr = assetManager.open("pano_1.jpg");
+                    else if (name.equals("d"))
+                        istr = assetManager.open("pano_16.jpg");
+                    else if (name.equals("e") || name.equals("f"))
+                        istr = assetManager.open("pano_2.jpg");
+                    else if (name.equals("g"))
+                        istr = assetManager.open("pano_3.jpg");
+                    else if (name.equals("h"))
+                        istr = assetManager.open("pano_17.jpg");
+                    else if (name.equals("i") || name.equals("j"))
+                        istr = assetManager.open("pano_4.jpg");
+                    else if (name.equals("k"))
+                        istr = assetManager.open("pano_5.jpg");
+                    else if (name.equals("l"))
+                        istr = assetManager.open("pano_12.jpg");
+                    else if (name.equals("m"))
+                        istr = assetManager.open("pano_6.jpg");
+                    else if (name.equals("n"))
+                        istr = assetManager.open("pano_14.jpg");
+                    else if (name.equals("o") || name.equals("p"))
+                        istr = assetManager.open("pano_7.jpg");
+                    else if (name.equals("q") || name.equals("r"))
+                        istr = assetManager.open("pano_8.jpg");
+                    else if (name.equals("s"))
+                        istr = assetManager.open("pano_9.jpg");
+                    else if (name.equals("t"))
+                        istr = assetManager.open("pano_15.jpg");
+                    else if (name.equals("u") || name.equals("v"))
+                        istr = assetManager.open("pano_10.jpg");
+                    else if (name.equals("w") || name.equals("x"))
+                        istr = assetManager.open("pano_11.jpg");
+                    else
+                        istr = assetManager.open("pano_13.jpg");
                     panoOptions = new VrPanoramaView.Options();
                     panoOptions.inputType = Options.TYPE_MONO;
                 } catch (IOException e) {
