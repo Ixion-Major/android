@@ -143,7 +143,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DetailsActivity.this, VRActivity.class);
-                intent.putExtra(KEY_BEDROOMS, bhk);
+                intent.putExtra(KEY_NAME, name);
                 startActivity(intent);
 
             }
