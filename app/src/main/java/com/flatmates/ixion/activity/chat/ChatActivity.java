@@ -40,7 +40,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
-import com.flatmates.ixion.activity.BazaarSearchActivity;
+import com.flatmates.ixion.activity.decentralized.BazaarSearchActivity;
 import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
 import com.flatmates.ixion.activity.PushDataActivity;
@@ -52,12 +52,16 @@ import com.flatmates.ixion.utils.Endpoints;
 import com.flatmates.ixion.utils.NetworkConnection;
 import com.flatmates.ixion.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.UserDataHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,6 +82,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_AREA;
 import static com.flatmates.ixion.utils.Constants.KEY_BEDROOMS;
 import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
+import static com.flatmates.ixion.utils.Constants.KEY_CHATS;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
@@ -689,7 +694,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_chat:
-                startActivity(new Intent(ChatActivity.this, UserChatActivity.class));
+                fetchUserChatsFromFirebase();
                 break;
             case R.id.nav_settings:
                 break;
@@ -707,6 +712,42 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    private void fetchUserChatsFromFirebase() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(ChatActivity.this)
+                .content("Loading chats")
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        dialog.show();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRefData = database.getReference("chatroom");
+        final ArrayList<String> chats = new ArrayList<>();
+        myRefData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG, "onDataChange: " + dataSnapshot);
+                chats.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.getKey().contains(preferences.getString(USER_EMAIL, "").replace(".", "_@_"))) {
+                        chats.add(snapshot.getKey().split(",")[0].replace("_@_", "."));
+                    }
+                }
+                Intent intent = new Intent(ChatActivity.this, AllChatsActivity.class);
+                intent.putStringArrayListExtra(KEY_CHATS, chats);
+                startActivity(intent);
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("MainActivity", databaseError.getDetails());
+                Toast.makeText(ChatActivity.this, "Couldn't fetch chats", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
     }
 
 
@@ -788,11 +829,19 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                         .getJSONObject("vendor")
                                         .getString("header_hash");
                                 Log.i(TAG, "onResponse: vendor header hash: " + vendorHeaderHash);
+
                                 String vendorLocation = object.getJSONObject("vendor_offer")
                                         .getJSONObject("listing")
                                         .getJSONObject("vendor")
                                         .getString("location");
                                 Log.i(TAG, "onResponse: vendor location: " + vendorLocation);
+
+                                String categories = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("category");
+                                Log.i(TAG, "onResponse: categories: " + categories);
+
 
                                 BlockchainData data = new BlockchainData();
                                 data.setGUID(GUID);
@@ -806,6 +855,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 data.setVendorLocation(vendorLocation);
                                 data.setVendorName(vendorName);
                                 data.setCurrency(currency);
+                                data.setCategories(categories);
 
                                 try {
                                     getContentResolver().insert(BlockchainTable.CONTENT_URI,

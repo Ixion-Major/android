@@ -1,6 +1,7 @@
 package com.flatmates.ixion.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.decentralized.BCDetailActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.utils.Endpoints;
 
@@ -21,8 +23,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.flatmates.ixion.utils.Constants.KEY_BC_ITEM;
+
 /**
- * Created by gurpreet on 07/04/17.
+ * Created by Gurpreet on 07/04/17.
  */
 
 public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.MyViewHolder> {
@@ -49,7 +53,6 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-
         holder.textviewOwner.setText(dataArrayList.get(holder.getAdapterPosition()).getVendorName());
         holder.textviewDescription.setText(dataArrayList.get(holder.getAdapterPosition()).getDescription());
         holder.textviewPrice.setText(dataArrayList.get(holder.getAdapterPosition()).getCurrency() + " " +
@@ -64,9 +67,9 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: open new activity
-                Toast.makeText(context, "Info:\n" + dataArrayList.get(holder.getAdapterPosition()).getGUID()
-                        + "\n" + dataArrayList.get(holder.getAdapterPosition()).getTitle(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, BCDetailActivity.class);
+                intent.putExtra(KEY_BC_ITEM, dataArrayList.get(holder.getAdapterPosition()));
+                context.startActivity(intent);
             }
         });
     }

@@ -1,5 +1,8 @@
 package com.flatmates.ixion.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
 import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 
@@ -8,7 +11,7 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
  */
 
 @SimpleSQLTable(table = "Blockchain", provider = "DataProvider")
-public class BlockchainData {
+public class BlockchainData implements Parcelable {
 
     @SimpleSQLColumn(value = "object_id", primary = true)
     private String objectID;
@@ -32,6 +35,8 @@ public class BlockchainData {
     private String vendorHeaderHash;
     @SimpleSQLColumn("currency")
     private String currency;
+    @SimpleSQLColumn("categories")
+    private String categories;
 
 
     public BlockchainData() {
@@ -39,7 +44,7 @@ public class BlockchainData {
 
     public BlockchainData(String objectID, String contractID, String GUID, String title,
                           String description, String imageHash, String price, String vendorName,
-                          String vendorLocation, String vendorHeaderHash, String currency) {
+                          String vendorLocation, String vendorHeaderHash, String currency, String categories) {
         this.objectID = objectID;
         this.contractID = contractID;
         this.GUID = GUID;
@@ -51,6 +56,24 @@ public class BlockchainData {
         this.vendorLocation = vendorLocation;
         this.vendorHeaderHash = vendorHeaderHash;
         this.currency = currency;
+        this.categories = categories;
+    }
+
+    public BlockchainData(Parcel in) {
+        String[] data = new String[12];
+        in.readStringArray(data);
+        this.objectID = data[0];
+        this.contractID = data[1];
+        this.GUID = data[2];
+        this.title = data[3];
+        this.description = data[4];
+        this.imageHash = data[5];
+        this.price = data[6];
+        this.vendorName = data[7];
+        this.vendorLocation = data[8];
+        this.vendorHeaderHash = data[9];
+        this.currency = data[10];
+        this.categories = data[11];
     }
 
 
@@ -141,4 +164,45 @@ public class BlockchainData {
     public void setCurrency(String currency) {
         this.currency = currency;
     }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[]{this.objectID,
+                this.contractID,
+                this.GUID,
+                this.title,
+                this.description,
+                this.imageHash,
+                this.price,
+                this.vendorName,
+                this.vendorLocation,
+                this.vendorHeaderHash,
+                this.currency,
+                this.categories
+        });
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public BlockchainData createFromParcel(Parcel in) {
+            return new BlockchainData(in);
+        }
+
+        public BlockchainData[] newArray(int size) {
+            return new BlockchainData[size];
+        }
+    };
+
 }
