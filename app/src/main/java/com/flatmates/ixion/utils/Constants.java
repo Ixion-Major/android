@@ -23,6 +23,8 @@ public class Constants {
     public static final String KEY_BUNDLE = "bundle";
     public static final String TO_ASK = "things left to ask to user";
 
+    public static final String KEY_CHATS = "user chats";
+
     public static final String KEY_NAME= "name";
     public static final String KEY_MOBILE = "mobile";
     public static final String KEY_EMAIL = "email";
@@ -31,6 +33,7 @@ public class Constants {
     public static final String KEY_IMAGE = "image";
 
 
+    public static final String KEY_BC_ITEM = "blockchain item";
     public static final String DEFAULT_IMAGE_HASH = "44f2e2b03e17326e0617bde347849952ff0725c9";
     public static final String DEFAULT_VENDOR_HASH = "44f2e2b03e17326e0617bde347849952ff0725c9";
 

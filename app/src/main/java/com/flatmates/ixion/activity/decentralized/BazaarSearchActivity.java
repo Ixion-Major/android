@@ -1,4 +1,4 @@
-package com.flatmates.ixion.activity;
+package com.flatmates.ixion.activity.decentralized;
 
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
