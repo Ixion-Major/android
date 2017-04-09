@@ -66,7 +66,7 @@ public class DetailsActivity extends AppCompatActivity {
     String bhk;
     String city;
     String state;
-    String rent, name, email, mobile, address, image;
+    String rent, name, email, mobile, address, image, fullAddress;
 
     private static final String TAG = DetailsActivity.class.getSimpleName();
 
@@ -98,9 +98,15 @@ public class DetailsActivity extends AppCompatActivity {
 
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
+        if(city.equals(state)){
+            fullAddress = address + ", " + area+", "+ city;
+        }
+        else
+            fullAddress = address + ", " + area+", "+ city+", "+state;
+
 
         txt_name.setText(name);
-        txt_address.setText(address);
+        txt_address.setText(fullAddress);
         txt_bhk.setText(bhk);
         txt_rent.setText(rent);
 //        txt_mobile.setText(mobile);
@@ -108,7 +114,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(image)
-                .placeholder(getResources().getDrawable(R.mipmap.ic_launcher))
+                .placeholder(getResources().getDrawable(R.drawable.placeholder))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .dontAnimate()
                 .listener(new RequestListener<String, GlideDrawable>() {

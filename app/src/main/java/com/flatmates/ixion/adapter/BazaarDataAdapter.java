@@ -62,7 +62,8 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
                 .load(Endpoints.endpointFetchImage(
                         dataArrayList.get(holder.getAdapterPosition()).getGUID(),
                         dataArrayList.get(holder.getAdapterPosition()).getImageHash()))
-                .error(context.getResources().getDrawable(R.drawable.ic_loading))
+                .error(context.getResources().getDrawable(R.drawable.placeholder))
+                .fitCenter()
                 .into(holder.imageviewProperty);
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
