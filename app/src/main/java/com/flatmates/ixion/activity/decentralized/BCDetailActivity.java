@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,14 +55,13 @@ public class BCDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bcdetail);
         ButterKnife.bind(this);
 
-        //TODO: set layout
-
         BlockchainData data = getIntent().getParcelableExtra(KEY_BC_ITEM);
 
         Glide.with(this)
                 .load(Endpoints.endpointFetchImage(
                         data.getGUID(),
                         data.getImageHash()))
+                .override(720, 480)
                 .fitCenter()
                 .error(getResources().getDrawable(R.drawable.placeholder))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
