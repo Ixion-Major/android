@@ -122,6 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     DatabaseReference myRefData = database.getReference("Data");
 
     private static final String TAG = MapsActivity.class.getSimpleName();
+    private MaterialDialog materialDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +139,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Building the GoogleApi client
             buildGoogleApiClient();
         }
+
+        materialDialog = new MaterialDialog.Builder(this)
+                .title(getResources().getString(R.string.searching))
+                .content(getResources().getString(R.string.please_wait))
+                .progress(true, 0)
+                .show();
 
         Bundle bundle = getIntent().getExtras().getBundle(Constants.KEY_BUNDLE);
         if (bundle != null) {
@@ -386,6 +393,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onMarkerClick(Marker marker) {
                 final String lon = String.valueOf(marker.getPosition().longitude);
                 final String lat = String.valueOf(marker.getPosition().latitude);
+                if (lon.equals(String.valueOf(longitude))) {
+                    marker.setTitle("You are here");
+                    marker.showInfoWindow();
+                }
                 Query recentPostsQuery = myRefData.orderByChild("lon").equalTo(lon);
                 recentPostsQuery.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -630,6 +641,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 14.0f));
+        materialDialog.dismiss();
     }
 
     private void fetchData(final String match) {
@@ -834,6 +846,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void noResultDialog() {
+        materialDialog.dismiss();
         new MaterialDialog.Builder(MapsActivity.this)
                 .title("Oops!")
                 .content("No result found")
