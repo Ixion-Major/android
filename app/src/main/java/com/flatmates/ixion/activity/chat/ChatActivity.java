@@ -317,14 +317,18 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     private void showUserInputBubble(final String input) {
-        TextView userMessage = new TextView(ChatActivity.this);
+        Button userMessage = new Button(ChatActivity.this);
         userMessage.setText(input);
-        userMessage.setGravity(Gravity.END);
+        userMessage.setGravity(Gravity.START);
         userMessage.setTextSize(18);
-        userMessage.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        userMessage.setTextColor(getResources().getColor(android.R.color.white));
+        userMessage.setPadding(20,20,80,20);
+//        userMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
         LinearLayout.LayoutParams llp =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
+        llp.gravity = Gravity.END;
         llp.setMargins(150, 30, 10, 30); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
@@ -502,18 +506,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             e.printStackTrace();
         }
 
-        TextView serverMessage = new TextView(ChatActivity.this);
+        Button serverMessage = new Button(ChatActivity.this);
         if (!message.equals(""))
             serverMessage.setText(message);
         else
             serverMessage.setText(getFromPreferences());
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
-        serverMessage.setTextColor(getResources().getColor(android.R.color.black));
+        serverMessage.setPadding(80,20,20,20);
+        serverMessage.setTextColor(getResources().getColor(android.R.color.white));
+        serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(10, 30, 150, 30); // llp.setMargins(left, top, right, bottom);
+        llp.gravity = Gravity.START;
         serverMessage.setLayoutParams(llp);
 
         messageView.addView(serverMessage);
