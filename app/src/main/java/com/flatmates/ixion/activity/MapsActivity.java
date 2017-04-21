@@ -107,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double lat;
     double lon;
     double latitude, longitude;
-    boolean dataFound;
+    int dataCount = 0;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     public static final int LOCATION_PERMISSION_REQUEST = 1001;
 
@@ -122,7 +122,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     DatabaseReference myRefData = database.getReference("Data");
 
     private static final String TAG = MapsActivity.class.getSimpleName();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,9 +171,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        dataFound = false;
-
-        if (!city.equals("") && budget.equals("") && bhk.equals(""))
+        if (!city.equals("") && !budget.equals("") && !bhk.equals(""))
+            fetchBUDAREABHK(minBudget, maxBudget, city, bhk);
+        else if (!area.equals("") && !budget.equals("") && !bhk.equals(""))
+            fetchBUDAREABHK(minBudget, maxBudget, area, bhk);
+        else if (!state.equals("") && !budget.equals("") && !bhk.equals(""))
+            fetchBUDAREABHK(minBudget, maxBudget, state, bhk);
+        else if (!city.equals("") && budget.equals("") && bhk.equals(""))
             fetchData(city);
         else if (!area.equals("") && budget.equals("") && bhk.equals(""))
             fetchData(area);
@@ -197,7 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else if (!bhk.equals(""))
             fetchBhk(bhk);
     }
-
 
     @Override
     protected void onStart() {
@@ -276,7 +278,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         createLocationRequest();
     }
 
-
     private boolean checkPlayServicesAvailablity() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -294,19 +295,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         checkPlayServicesAvailablity();
     }
 
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
-
 
     @Override
     public void onConnected(Bundle arg0) {
@@ -319,13 +317,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         displayLocation();
     }
 
-
     protected void startLocationUpdates() {
         ActivityCompat.requestPermissions(MapsActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 LOCATION_PERMISSION_REQUEST);
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -361,7 +357,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
 
@@ -378,12 +373,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-
     @Override
     public void onConnectionSuspended(int arg0) {
         mGoogleApiClient.connect();
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -473,7 +466,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     @OnClick(R.id.fab_openbazaar_search)
     public void openSearchBazaarActivity() {
@@ -622,7 +614,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         InitApplication.getInstance().addToQueue(request);
     }
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -635,13 +626,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editor.apply();
     }
 
-
     private void showMarker(String name, Double lati, Double loni) {
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 14.0f));
     }
-
 
     private void fetchData(final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
@@ -659,10 +648,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
                         showMarker(name, lat, lon);
-                        dataFound = true;
+                        dataCount++;
                     }
                 }
-                if (!dataFound) {
+                if (dataCount == 0) {
                     //TODO: all these will show multiple dialogs if more than one filters are not found
                     noResultDialog();
                 }
@@ -674,7 +663,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     private void fetchBhk(final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
@@ -693,10 +681,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_bhk)) {
                         showMarker(name, lat, lon);
-                        dataFound = true;
+                        dataCount++;
                     }
                 }
-                if (!dataFound) {
+                if (dataCount == 0) {
                     noResultDialog();
                 }
             }
@@ -708,8 +696,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-    private void fetchAB(final String match, final String m_bhk) {
+    private void fetchAB(final String match, final String mBhk) {
         myRefData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -725,13 +712,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lat = Double.parseDouble(data.getLat());
                     lon = Double.parseDouble(data.getLon());
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
-                        if (m_bhk.equals(map_bhk)) {
+                        if (mBhk.equals(map_bhk)) {
                             showMarker(name, lat, lon);
-                            dataFound = true;
+                            dataCount++;
                         }
                     }
                 }
-                if (!dataFound) {
+                if (dataCount == 0) {
                     noResultDialog();
                 }
             }
@@ -742,7 +729,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     private void fetchBudget(final int min, final int max) {
 
@@ -762,10 +748,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lon = Double.parseDouble(data.getLon());
                     if (mapRent >= min && mapRent <= max) {
                         showMarker(name, lat, lon);
-                        dataFound = true;
+                        dataCount++;
                     }
                 }
-                if (!dataFound) {
+                if (dataCount == 0) {
                     noResultDialog();
                 }
             }
@@ -777,7 +763,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
-
 
     private void fetchBUDAREA(final int min, final int max, final String match) {
         myRefData.addValueEventListener(new ValueEventListener() {
@@ -797,10 +782,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
                         if (mapRent >= min && mapRent <= max) {
                             showMarker(name, lat, lon);
-                            dataFound = true;
+                            dataCount++;
                         }
                     }
-                    if (!dataFound) {
+                    if (dataCount == 0) {
                         noResultDialog();
                     }
                 }
@@ -813,6 +798,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void fetchBUDAREABHK(final int min, final int max, final String match, final String mBHK) {
+        myRefData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Data data = snapshot.getValue(Data.class);
+                    String map_area = data.getArea();
+                    String map_city = data.getCity();
+                    String map_state = data.getState();
+                    String map_rent = data.getRent();
+                    String map_bhk = data.getBhk();
+                    map_bhk = map_bhk.substring(0, 1);
+                    name = data.getName();
+                    int mapRent = Integer.parseInt(map_rent);
+                    lat = Double.parseDouble(data.getLat());
+                    lon = Double.parseDouble(data.getLon());
+                    if (match.equals(map_area) || match.equals(map_city) || match.equals(map_state)) {
+                        if (mapRent >= min && mapRent <= max && map_bhk.equals(mBHK)) {
+                            showMarker(name, lat, lon);
+                            dataCount++;
+                        }
+                    }
+                }
+                if (dataCount == 0) {
+                    noResultDialog();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("MainActivity", databaseError.getDetails());
+            }
+        });
+    }
 
     private void noResultDialog() {
         new MaterialDialog.Builder(MapsActivity.this)
