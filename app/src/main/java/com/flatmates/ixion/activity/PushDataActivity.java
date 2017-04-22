@@ -84,7 +84,7 @@ public class PushDataActivity extends AppCompatActivity {
             Log.e(TAG, "onCreate: ", e);
         }
 
-        //TODO: get lat lon from address -> GeoEncoding, street view
+
 
     }
 
