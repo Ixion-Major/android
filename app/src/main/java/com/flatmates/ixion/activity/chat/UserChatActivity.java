@@ -7,12 +7,15 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,13 +55,14 @@ public class UserChatActivity extends AppCompatActivity {
 
     @BindView(R.id.imagebutton_send)
     ImageButton sendButton;
-    @BindView(R.id.textView2)
-    TextView tv;
+    @BindView(R.id.chat_llayout)
+    LinearLayout linearLayout;
     @BindView(R.id.editText)
     EditText et;
     @BindView(R.id.scrollView2)
     ScrollView scrollView;
 
+    String textContract = "";
     private String userEmail, temp_key;
     private DatabaseReference root;
     SharedPreferences preferences;
@@ -158,11 +162,55 @@ public class UserChatActivity extends AppCompatActivity {
         Iterator i = dataSnapshot.getChildren().iterator();
         while (i.hasNext()) {
             String chatMsg = (String) ((DataSnapshot) i.next()).getValue();
-            String chatUsername = ((String) ((DataSnapshot) i.next()).getValue()).split("@")[0];
-            tv.append(chatUsername + " :-  " + chatMsg + "\n");
-            et.setText("");
+//            String chatUsername = ((String) ((DataSnapshot) i.next()).getValue()).split("@")[0];
+            String chatUsername = ((String) ((DataSnapshot) i.next()).getValue());
+            textContract =  chatUsername + " :- " + chatMsg + "\n" + textContract;
+            if (chatUsername.equals(userEmail)) {
+                showUserInputBubble(chatMsg);
+            } else
+                showServerResponseBubble(chatMsg);
+                et.setText("");
         }
     }
+
+    private void showUserInputBubble(final String input) {
+        Button userMessage = new Button(UserChatActivity.this);
+        userMessage.setTransformationMethod(null);
+        userMessage.setText(input);
+        userMessage.setGravity(Gravity.START);
+        userMessage.setTextSize(16);
+        userMessage.setTextColor(getResources().getColor(android.R.color.white));
+        userMessage.setPadding(20, 20, 40, 20);
+        userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
+        LinearLayout.LayoutParams llp =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+        llp.gravity = Gravity.END;
+        llp.setMargins(150, 10, 0, 10); // llp.setMargins(left, top, right, bottom);
+        userMessage.setLayoutParams(llp);
+
+        linearLayout.addView(userMessage);
+    }
+
+    private void showServerResponseBubble(String serverResponse) {
+        Button serverMessage = new Button(UserChatActivity.this);
+        serverMessage.setTransformationMethod(null);
+        serverMessage.setText(serverResponse);
+        serverMessage.setGravity(Gravity.START);
+        serverMessage.setTextSize(16);
+        serverMessage.setPadding(60, 20, 20, 20);
+        serverMessage.setTextColor(getResources().getColor(android.R.color.white));
+        serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
+        LinearLayout.LayoutParams llp =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+        llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
+        llp.gravity = Gravity.START;
+        serverMessage.setLayoutParams(llp);
+
+        linearLayout.addView(serverMessage);
+    }
+
 
 
     @Override
@@ -181,7 +229,7 @@ public class UserChatActivity extends AppCompatActivity {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog,
                                                 @NonNull DialogAction which) {
-                                createContract(tv.getText().toString());
+                                createContract(textContract);
                                 //TODO: delete chat after creating contract
                             }
                         })
