@@ -44,6 +44,8 @@ import com.flatmates.ixion.activity.decentralized.BazaarSearchActivity;
 import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
 import com.flatmates.ixion.activity.PushDataActivity;
+import com.flatmates.ixion.activity.helper.AboutUsActivity;
+import com.flatmates.ixion.activity.helper.PrivacyPolicyActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.model.BlockchainTable;
 import com.flatmates.ixion.model.UserMessage;
@@ -84,6 +86,7 @@ import static com.flatmates.ixion.utils.Constants.KEY_BUDGET;
 import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CHATS;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
+import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
 import static com.flatmates.ixion.utils.Constants.KEY_MESSAGE;
 import static com.flatmates.ixion.utils.Constants.KEY_STATE;
 import static com.flatmates.ixion.utils.Constants.TO_ASK;
@@ -111,6 +114,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     DrawerLayout drawer;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+//    @BindView(R.id.textview_nav_email)
+//    TextView textviewNavigationEmail;
 
     TextToSpeech tts;
     Bundle bundle;
@@ -155,14 +160,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
         toggle.syncState();
 
+//        textviewNavigationEmail.setText(preferences.getString(KEY_EMAIL, ""));
+
         String enabledMethods =
                 Settings.Secure.getString(ChatActivity.this.getContentResolver(),
                         Settings.Secure.ENABLED_INPUT_METHODS);
 
-        /*
-         * If voice search is enabled, show UI, else
-         * show dialog with info to turn on voice search
-         */
         if (enabledMethods.contains("voicesearch")) {
             Log.i(TAG, "onCreate: " + enabledMethods);
 
@@ -257,7 +260,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     public void onStart() {
         super.onStart();
-//        buttonShowResults.setVisibility(GONE);
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -750,6 +752,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             case R.id.action_logout:
                 logoutUser();
                 break;
+            case R.id.nav_about_us:
+                startActivity(new Intent(ChatActivity.this, AboutUsActivity.class));
+                break;
+            case R.id.nav_privacy_policy:
+                startActivity(new Intent(ChatActivity.this, PrivacyPolicyActivity.class));
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -776,7 +784,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     if (snapshot.getKey().contains(preferences.getString(USER_EMAIL, "").replace(".", "_@_"))) {
                         chats.add(snapshot.getKey()
                                 .replace(preferences.getString(USER_EMAIL, "").replace(".", "_@_"), "")
-                                .replace(",", ""));
+                                .replace(",", "")
+                                .replace("_@_", "."));
                     }
                 }
                 Intent intent = new Intent(ChatActivity.this, AllChatsActivity.class);
