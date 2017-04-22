@@ -59,7 +59,6 @@ public class UserChatActivity extends AppCompatActivity {
     @BindView(R.id.scrollView2)
     ScrollView scrollView;
 
-    //    MediaPlayer mp;
     private String username, temp_key;
     private DatabaseReference root;
     SharedPreferences preferences;

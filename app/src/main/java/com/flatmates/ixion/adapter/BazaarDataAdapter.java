@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.flatmates.ixion.utils.Constants.KEY_BC_ITEM;
 
@@ -93,7 +95,7 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
         @BindView(R.id.textview_title)
         TextView textviewTitle;
         @BindView(R.id.imageview_property)
-        ImageView imageviewProperty;
+        CircleImageView imageviewProperty;
         @BindView(R.id.linearlayout_property_item)
         LinearLayout linearLayout;
 

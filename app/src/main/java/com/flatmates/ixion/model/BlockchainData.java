@@ -37,14 +37,16 @@ public class BlockchainData implements Parcelable {
     private String currency;
     @SimpleSQLColumn("categories")
     private String categories;
-
+    @SimpleSQLColumn("contract")
+    private String contract;
 
     public BlockchainData() {
     }
 
     public BlockchainData(String objectID, String contractID, String GUID, String title,
                           String description, String imageHash, String price, String vendorName,
-                          String vendorLocation, String vendorHeaderHash, String currency, String categories) {
+                          String vendorLocation, String vendorHeaderHash, String currency,
+                          String categories, String contract) {
         this.objectID = objectID;
         this.contractID = contractID;
         this.GUID = GUID;
@@ -57,10 +59,11 @@ public class BlockchainData implements Parcelable {
         this.vendorHeaderHash = vendorHeaderHash;
         this.currency = currency;
         this.categories = categories;
+        this.contract = contract;
     }
 
     public BlockchainData(Parcel in) {
-        String[] data = new String[12];
+        String[] data = new String[13];
         in.readStringArray(data);
         this.objectID = data[0];
         this.contractID = data[1];
@@ -74,6 +77,7 @@ public class BlockchainData implements Parcelable {
         this.vendorHeaderHash = data[9];
         this.currency = data[10];
         this.categories = data[11];
+        this.contract = data[12];
     }
 
 
@@ -173,6 +177,14 @@ public class BlockchainData implements Parcelable {
         this.categories = categories;
     }
 
+    public String getContract() {
+        return contract;
+    }
+
+    public void setContract(String contract) {
+        this.contract = contract;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -191,7 +203,8 @@ public class BlockchainData implements Parcelable {
                 this.vendorLocation,
                 this.vendorHeaderHash,
                 this.currency,
-                this.categories
+                this.categories,
+                this.contract
         });
     }
 

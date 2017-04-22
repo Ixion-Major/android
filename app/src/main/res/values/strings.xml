@@ -51,7 +51,4 @@
     <string name="price">Price: </string>
     <string name="contract_id">Contract ID: </string>
     <string name="vendor_location">Vendor Location: </string>
-    
-    <string name="searching">Searching</string>
-    <string name="please_wait">Please Wait</string>
 </resources>
