@@ -129,6 +129,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
+        showPreviousConversation();
+
         navigationView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -256,7 +258,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void onStart() {
         super.onStart();
 //        buttonShowResults.setVisibility(GONE);
-        showPreviousConversation();
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override

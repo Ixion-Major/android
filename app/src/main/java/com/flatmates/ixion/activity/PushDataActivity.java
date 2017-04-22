@@ -1,5 +1,7 @@
 package com.flatmates.ixion.activity;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -85,14 +87,11 @@ public class PushDataActivity extends AppCompatActivity {
         }
 
 
-
     }
 
 
     @OnClick(R.id.btn_submit)
     public void pushToFirebase() {
-//        lon_str = lon.getText().toString();
-//                lat_str = lat.getText().toString();
         data = new Data();
         data.setName(etname.getText().toString().trim());
         data.setEmail(etemail.getText().toString().trim());
@@ -103,7 +102,11 @@ public class PushDataActivity extends AppCompatActivity {
         data.setArea(etarea.getText().toString().trim());
         data.setState(etstate.getText().toString().trim());
         data.setBhk(etbhk.getText().toString() + "bhk");
-//                System.out.println(lon_str+"  "+lat_str);
+        String address = etaddress.getText().toString() + "," + etarea.getText().toString() + ", " + etcity.getText().toString()
+                + ", " + etstate.getText().toString();
+        getLocationFromAddress(address);
+        data.setLon(lon_str);
+        data.setLat(lat_str);
 
         //TODO: Check for correct input before pushing
         if (!switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
@@ -196,6 +199,32 @@ public class PushDataActivity extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         InitApplication.getInstance().addToQueue(request);
+    }
+
+    public String getLocationFromAddress(String strAddress) {
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+            Address location = address.get(0);
+            location.getLatitude();
+            location.getLongitude();
+
+            lat_str = String.valueOf(location.getLatitude());
+
+            lon_str = String.valueOf(location.getLongitude());
+
+            Toast.makeText(this, lat_str + " , " + lon_str, Toast.LENGTH_SHORT).show();
+            System.out.println(lat_str + " , " + lon_str);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

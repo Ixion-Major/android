@@ -416,7 +416,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             final String image = data.getPurl();
 
                             new MaterialDialog.Builder(MapsActivity.this)
-                                    .title(name)
+                                    .title(name.toUpperCase())
                                     .content("Rent: " + rent + "\nNo. of Rooms: " + bhk + "\nAddress: " + address)
                                     .positiveText("SHOW MORE")
                                     .content("Rent: " + rent + "\nNo. of Rooms: " + bhk + "\nAddress: " + address)
