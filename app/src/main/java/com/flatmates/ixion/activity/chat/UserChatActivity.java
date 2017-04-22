@@ -1,11 +1,17 @@
 package com.flatmates.ixion.activity.chat;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,10 +48,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.flatmates.ixion.utils.Constants.KEY_ADDRESS;
 import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
-import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
-import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 public class UserChatActivity extends AppCompatActivity {
@@ -91,7 +94,6 @@ public class UserChatActivity extends AppCompatActivity {
                         .child("chatroom")
                         .child(userEmail + "," + ownerEmail);
         }
-        //TODO: need a separate chat panel for owners where they get pings on receiving message
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -128,6 +130,7 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 append_chat(dataSnapshot);
+                notifyUser();
             }
 
             @Override
@@ -150,6 +153,30 @@ public class UserChatActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void notifyUser() {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_notif)
+                        .setContentTitle("FlatMate")
+                        .setContentText("New message received from " +
+                                getIntent().getStringExtra(KEY_EMAIL).replace(".", "_@_"));
+        Intent resultIntent = new Intent(this, ChatActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ChatActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(0, mBuilder.build());
 
     }
 

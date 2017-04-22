@@ -741,6 +741,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 fetchUserChatsFromFirebase();
                 break;
             case R.id.nav_settings:
+
                 break;
             case R.id.nav_push_data:
                 startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
@@ -748,7 +749,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             case R.id.nav_decentralised_search:
                 openSearchBazaarActivity();
                 break;
-            //TODO: add actions here
+            //TODO: set actions here
             case R.id.action_logout:
                 logoutUser();
                 break;

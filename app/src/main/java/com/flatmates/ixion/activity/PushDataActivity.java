@@ -86,7 +86,6 @@ public class PushDataActivity extends AppCompatActivity {
             Log.e(TAG, "onCreate: ", e);
         }
 
-
     }
 
 
