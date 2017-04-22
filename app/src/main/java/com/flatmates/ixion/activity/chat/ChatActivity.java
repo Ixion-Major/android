@@ -484,7 +484,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     private void showServerResponseBubble(String serverResponse) {
-        if (serverResponse.equals("Hi! How may I help you?")) {
+        if (serverResponse.equals("Hi! How may I help you?") && messageView.getChildCount() == 0) {
             Button serverMessageButton = new Button(ChatActivity.this);
             serverMessageButton.setGravity(Gravity.START);
             serverMessageButton.setText("Hi! How may I help you?");
@@ -500,7 +500,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
             llp.gravity = Gravity.START;
             serverMessageButton.setLayoutParams(llp);
-            messageView.addView(serverMessageButton);
+            messageView.addView(serverMessageButton, 0);
         } else {
             String message = "";
             String area, city, state, bedrooms, budget;
@@ -519,12 +519,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
 
             Button serverMessage = new Button(ChatActivity.this);
+            String preferenceMessage = getFromPreferences();
             if (!message.equals(""))
                 serverMessage.setText(message);
             else
-                serverMessage.setText(getFromPreferences());
+                serverMessage.setText(preferenceMessage);
             serverMessage.setGravity(Gravity.START);
-            serverMessage.setTextSize(18);
+            serverMessage.setTextSize(16);
             serverMessage.setPadding(80, 20, 20, 20);
             serverMessage.setTextColor(getResources().getColor(android.R.color.white));
             serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
@@ -564,7 +565,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             e.printStackTrace();
         }
 
-        return "Finding properties matching " + response.trim()
+        return "Finding properties as per requirements:\n" + response.trim()
                 .replace("null", "")
                 .replace(" +", " ") +
                 " near you.\n\nAdd more filters or search?";
