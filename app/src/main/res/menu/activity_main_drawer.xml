@@ -27,6 +27,9 @@
                 android:id="@+id/nav_privacy_policy"
                 android:title="@string/privacy_policy" />
             <item
+                android:id="@+id/nav_feed_back"
+                android:title="@string/feedback" />
+            <item
                 android:id="@+id/action_logout"
                 android:title="@string/action_logout" />
         </menu>
