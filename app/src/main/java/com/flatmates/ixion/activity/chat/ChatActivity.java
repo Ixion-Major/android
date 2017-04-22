@@ -322,7 +322,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setGravity(Gravity.START);
         userMessage.setTextSize(18);
         userMessage.setTextColor(getResources().getColor(android.R.color.white));
-        userMessage.setPadding(20,20,80,20);
+        userMessage.setPadding(20, 20, 80, 20);
 //        userMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
         LinearLayout.LayoutParams llp =
@@ -513,7 +513,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             serverMessage.setText(getFromPreferences());
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(18);
-        serverMessage.setPadding(80,20,20,20);
+        serverMessage.setPadding(80, 20, 20, 20);
         serverMessage.setTextColor(getResources().getColor(android.R.color.white));
         serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
         LinearLayout.LayoutParams llp =
@@ -768,7 +768,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dialog.show();
 
         final Intent intent = new Intent(ChatActivity.this, BazaarSearchActivity.class);
-        //TODO: send bundle??
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointOBSearch(),
                 new Response.Listener<String>() {
@@ -863,6 +862,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 data.setVendorName(vendorName);
                                 data.setCurrency(currency);
                                 data.setCategories(categories);
+                                data.setContract(object.toString());
 
                                 try {
                                     getContentResolver().insert(BlockchainTable.CONTENT_URI,
