@@ -5,5 +5,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/listview_chats"
-    android:layout_margin="@dimen/activity_horizontal_margin"
     tools:context="com.flatmates.ixion.activity.chat.AllChatsActivity"/>

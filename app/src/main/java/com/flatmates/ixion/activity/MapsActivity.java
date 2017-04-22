@@ -645,7 +645,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void showMarker(String name, Double lati, Double loni) {
         LatLng apna = new LatLng(lati, loni);
-        mMap.addMarker(new MarkerOptions().position(apna).title(name));
+        mMap.addMarker(new MarkerOptions().position(apna).title(name)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.home_icon)));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 14.0f));
         materialDialog.dismiss();
     }
