@@ -34,6 +34,7 @@
     <string name="action_clear_all">Clear All</string>
     <string name="action_mark_all_read">Mark All as Read</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="feedback">Feedback</string>
 
     <string name="owner_name">Owner name: </string>
     <string name="address">Address: </string>
@@ -60,4 +61,8 @@
     <string name="property_contract">Contract</string>
     <string name="pay">Buy</string>
     <string name="transfer_money">Transfer money to buy</string>
+
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="submit">Submit</string>
 </resources>
