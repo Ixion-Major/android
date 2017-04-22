@@ -262,7 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            Toast.makeText(this, "Current location not available. Fetching previous location.",
 //                    Toast.LENGTH_SHORT).show();
             latitude = 28.567333;
-            longitude = 77.318373;
+            longitude = 77.318373;  //TODO: set to college location
         }
     }
 
@@ -478,7 +478,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
 
         final Intent intent = new Intent(MapsActivity.this, BazaarSearchActivity.class);
-        //TODO: send bundle??
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointOBSearch(),
                 new Response.Listener<String>() {
@@ -551,6 +550,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         .getJSONObject("vendor")
                                         .getString("location");
                                 Log.i(TAG, "onResponse: vendor location: " + vendorLocation);
+                                String categories = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("category");
+                                Log.i(TAG, "onResponse: categories: " + categories);
 
                                 BlockchainData data = new BlockchainData();
                                 data.setGUID(GUID);
@@ -564,6 +568,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 data.setVendorLocation(vendorLocation);
                                 data.setVendorName(vendorName);
                                 data.setCurrency(currency);
+                                data.setCategories(categories);
+                                data.setContract(object.toString());
 
                                 try {
                                     getContentResolver().insert(BlockchainTable.CONTENT_URI,
