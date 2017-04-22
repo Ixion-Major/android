@@ -59,7 +59,7 @@ public class UserChatActivity extends AppCompatActivity {
     @BindView(R.id.scrollView2)
     ScrollView scrollView;
 
-    private String username, temp_key;
+    private String userEmail, temp_key;
     private DatabaseReference root;
     SharedPreferences preferences;
 
@@ -73,16 +73,24 @@ public class UserChatActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(UserChatActivity.this);
-        username = preferences.getString(USER_EMAIL, "").replace(".", "_@_");
+        userEmail = preferences.getString(USER_EMAIL, "").replace(".", "_@_");
         if (getIntent().getStringExtra(KEY_EMAIL) == null)
             root = FirebaseDatabase.getInstance().getReference()
                     .child("chatroom")
-                    .child("singhdaman4321@gmail_@_com" + "," + username);
-        else
-            root = FirebaseDatabase.getInstance().getReference()
-                    .child("chatroom")
-                    .child(getIntent().getStringExtra(KEY_EMAIL).replace(".", "_@_") + "," + username);
+                    .child("singhdaman4321@gmail_@_com" + "," + userEmail);
+        else {
 
+            String ownerEmail = getIntent().getStringExtra(KEY_EMAIL).replace(".", "_@_");
+
+            if (ownerEmail.compareTo(userEmail) > 0)
+                root = FirebaseDatabase.getInstance().getReference()
+                        .child("chatroom")
+                        .child(ownerEmail + "," + userEmail);
+            else
+                root = FirebaseDatabase.getInstance().getReference()
+                        .child("chatroom")
+                        .child(userEmail + "," + ownerEmail);
+        }
         //TODO: need a separate chat panel for owners where they get pings on receiving message
 
         try {
@@ -101,7 +109,7 @@ public class UserChatActivity extends AppCompatActivity {
 
                 DatabaseReference messageRoot = root.child(temp_key);
                 Map<String, Object> map2 = new HashMap<>();
-                map2.put("name", username);
+                map2.put("name", userEmail);
                 map2.put("message", et.getText().toString());
                 messageRoot.updateChildren(map2);
 

@@ -784,7 +784,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     if (snapshot.getKey().contains(preferences.getString(USER_EMAIL, "").replace(".", "_@_"))) {
                         chats.add(snapshot.getKey()
                                 .replace(preferences.getString(USER_EMAIL, "").replace(".", "_@_"), "")
-                                .replace(",", ""));
+                                .replace(",", "")
+                                .replace("_@_", "."));
                     }
                 }
                 Intent intent = new Intent(ChatActivity.this, AllChatsActivity.class);
