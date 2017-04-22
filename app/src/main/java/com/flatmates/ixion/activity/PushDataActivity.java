@@ -106,13 +106,35 @@ public class PushDataActivity extends AppCompatActivity {
 //                System.out.println(lon_str+"  "+lat_str);
 
         //TODO: Check for correct input before pushing
-        myRefUserData.push().setValue(data);
-
-        if (switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
-                && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")) {
-            uploadToBlockChain();
+        if (!switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
+                && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")
+                && !etphone.getText().toString().equals("") && !etstate.getText().toString().equals("") &&
+                !etarea.getText().toString().equals("") && !etcity.getText().toString().equals("") &&
+                !etrent.getText().toString().equals("") && !etname.getText().toString().equals("")) {
+            myRefUserData.push().setValue(data);
+            Toast.makeText(this, "Property Listed!", Toast.LENGTH_SHORT).show();
+            etname.setText("");
+            etemail.setText("");
+            etbhk.setText("");
+            etDescription.setText("");
+            etTitle.setText("");
+            etaddress.setText("");
+            etarea.setText("");
+            etphone.setText("");
+            etcity.setText("");
+            etstate.setText("");
+            etrent.setText("");
         } else {
-            Toast.makeText(this, "Please fill Title, description and BHK", Toast.LENGTH_SHORT).show();
+            if (switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
+                    && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")
+                    && !etphone.getText().toString().equals("") && !etstate.getText().toString().equals("") &&
+                    !etarea.getText().toString().equals("") && !etcity.getText().toString().equals("") &&
+                    !etrent.getText().toString().equals("") && !etname.getText().toString().equals("")) {
+                myRefUserData.push().setValue(data);
+                uploadToBlockChain();
+            } else {
+                Toast.makeText(this, "Please fill all information", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -124,9 +146,10 @@ public class PushDataActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.i(TAG, "onResponse: " + response);
-                        if (response.contains("true"))
+                        if (response.contains("true")) {
                             Toast.makeText(PushDataActivity.this, "Successfully created contract listing",
                                     Toast.LENGTH_SHORT).show();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -163,7 +186,7 @@ public class PushDataActivity extends AppCompatActivity {
                 params.put("condition", "new");
                 params.put("free_shipping", "false");
                 params.put("sku", "");
-                params.put("images", "2e541a02e89c532d726d95e62389c721563cdd29");   //TODO: upload image api
+                params.put("images", "2e541a02e89c532d726d95e62389c721563cdd29");   //TODO: use upload image api
                 params.put("moderators", "['1010c55065e1248ce55485b92f7b3cf408b2c9aa']");
 
                 return params;
