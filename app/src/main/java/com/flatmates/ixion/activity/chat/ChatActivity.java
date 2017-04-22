@@ -123,17 +123,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO: show empty view
-//        if (messageView.getChildAt(0) == null) {
-//            setContentView(R.layout.layout_empty_view);
-//        } else {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
-        showPreviousConversation();
         navigationView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -261,6 +256,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void onStart() {
         super.onStart();
 //        buttonShowResults.setVisibility(GONE);
+        showPreviousConversation();
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -320,16 +316,15 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Button userMessage = new Button(ChatActivity.this);
         userMessage.setText(input);
         userMessage.setGravity(Gravity.START);
-        userMessage.setTextSize(18);
+        userMessage.setTextSize(16);
         userMessage.setTextColor(getResources().getColor(android.R.color.white));
         userMessage.setPadding(20, 20, 80, 20);
-//        userMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
         llp.gravity = Gravity.END;
-        llp.setMargins(150, 30, 10, 30); // llp.setMargins(left, top, right, bottom);
+        llp.setMargins(150, 10, 0, 10); // llp.setMargins(left, top, right, bottom);
         userMessage.setLayoutParams(llp);
 
         messageView.addView(userMessage);
@@ -457,6 +452,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Constants.REQUEST_SEND_SPEECH_INPUT_TO_SERVER);
     }
 
+
     private void saveToPreferencesIfNotNull(String area, String city, String state,
                                             String bedrooms, String budget) {
         String toAsk = "";
@@ -484,46 +480,63 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
-//        showServerResponseBubble(textToSpeak, null);
     }
 
 
     private void showServerResponseBubble(String serverResponse) {
+        if (serverResponse.equals("Hi! How may I help you?")) {
+            Button serverMessageButton = new Button(ChatActivity.this);
+            serverMessageButton.setGravity(Gravity.START);
+            serverMessageButton.setText("Hi! How may I help you?");
+            serverMessageButton.setTextSize(16);
+            serverMessageButton.setPadding(80, 20, 20, 20);
+            serverMessageButton.setTextColor(getResources()
+                    .getColor(android.R.color.white));
+            serverMessageButton.setBackground(getResources()
+                    .getDrawable(R.drawable.incoming_message_bubble));
+            LinearLayout.LayoutParams llp =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT);
+            llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
+            llp.gravity = Gravity.START;
+            serverMessageButton.setLayoutParams(llp);
+            messageView.addView(serverMessageButton);
+        } else {
+            String message = "";
+            String area, city, state, bedrooms, budget;
+            try {
+                JSONObject response = new JSONObject(serverResponse);
+                message = response.getString("message");
 
-        String message = "";
-        String area, city, state, bedrooms, budget;
-        try {
-            JSONObject response = new JSONObject(serverResponse);
-            message = response.getString("message");
+                area = response.getString("area");
+                city = response.getString("city");
+                state = response.getString("state");
+                bedrooms = response.getString("bedrooms");
+                budget = response.getString("budget");
+                saveToPreferencesIfNotNull(area, city, state, bedrooms, budget);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-            area = response.getString("area");
-            city = response.getString("city");
-            state = response.getString("state");
-            bedrooms = response.getString("bedrooms");
-            budget = response.getString("budget");
-            saveToPreferencesIfNotNull(area, city, state, bedrooms, budget);
-        } catch (JSONException e) {
-            e.printStackTrace();
+            Button serverMessage = new Button(ChatActivity.this);
+            if (!message.equals(""))
+                serverMessage.setText(message);
+            else
+                serverMessage.setText(getFromPreferences());
+            serverMessage.setGravity(Gravity.START);
+            serverMessage.setTextSize(18);
+            serverMessage.setPadding(80, 20, 20, 20);
+            serverMessage.setTextColor(getResources().getColor(android.R.color.white));
+            serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
+            LinearLayout.LayoutParams llp =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT);
+            llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
+            llp.gravity = Gravity.START;
+            serverMessage.setLayoutParams(llp);
+
+            messageView.addView(serverMessage);
         }
-
-        Button serverMessage = new Button(ChatActivity.this);
-        if (!message.equals(""))
-            serverMessage.setText(message);
-        else
-            serverMessage.setText(getFromPreferences());
-        serverMessage.setGravity(Gravity.START);
-        serverMessage.setTextSize(18);
-        serverMessage.setPadding(80, 20, 20, 20);
-        serverMessage.setTextColor(getResources().getColor(android.R.color.white));
-        serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
-        LinearLayout.LayoutParams llp =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(10, 30, 150, 30); // llp.setMargins(left, top, right, bottom);
-        llp.gravity = Gravity.START;
-        serverMessage.setLayoutParams(llp);
-
-        messageView.addView(serverMessage);
     }
 
 
@@ -575,6 +588,26 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (realm != null)
                     realm.close();
             }
+        }
+
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<UserMessage> messages = realm.where(UserMessage.class).findAll();
+            if (messages.size() == 0) {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        UserMessage message = realm.createObject(UserMessage.class);
+                        message.setMessage("Hi! How may I help you?");
+                        message.setUserSent(false);
+                        showServerResponseBubble(message.getMessage());
+                    }
+                });
+            }
+        } finally {
+            if (realm != null)
+                realm.close();
         }
     }
 
