@@ -33,12 +33,12 @@ public class InitApplication extends Application {
         SendBird.init(BuildConfig.SENDBIRD_APP_ID, getApplicationContext());
 
         //TODO: remove
-//        Stetho.initializeWithDefaults(this);
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                        .build());
+        Stetho.initializeWithDefaults(this);
+//        Stetho.initialize(
+//                Stetho.newInitializerBuilder(this)
+//                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+//                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+//                        .build());
 
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()

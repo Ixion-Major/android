@@ -135,7 +135,6 @@ public class UserChatActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
@@ -156,7 +155,7 @@ public class UserChatActivity extends AppCompatActivity {
 
     }
 
-    private void notifyUser() {
+    private void notifyUser() { //todo set this
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_notif)
