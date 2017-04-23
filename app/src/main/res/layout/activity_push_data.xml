@@ -115,6 +115,14 @@
         </LinearLayout>
     </ScrollView>
 
+    <Button
+        android:id="@+id/btn_upload_image"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/colorPrimaryDark"
+        android:text="Upload Image"
+        android:textColor="@android:color/white" />
+
     <Switch
         android:id="@+id/switch_upload_decentralised"
         android:layout_width="match_parent"
