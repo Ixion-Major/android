@@ -517,6 +517,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 state = response.getString("state");
                 bedrooms = response.getString("bedrooms");
                 budget = response.getString("budget");
+                if (city.toLowerCase().equals("bangalore"))
+                    city = "bengaluru";
                 saveToPreferencesIfNotNull(area, city, state, bedrooms, budget);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -742,14 +744,24 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 fetchUserChatsFromFirebase();
                 break;
             case R.id.nav_settings:
+
                 break;
             case R.id.nav_push_data:
                 startActivity(new Intent(ChatActivity.this, PushDataActivity.class));
                 break;
             case R.id.nav_decentralised_search:
-                openSearchBazaarActivity();
+                new MaterialDialog.Builder(this)
+                        .title(R.string.enter_bhk_and_city)
+                        .content("Formatted string: bhk, city")
+                        .input("2bhk, delhi", "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                openSearchBazaarActivity(input.toString());
+                            }
+                        })
+                        .show();
                 break;
-            //TODO: add actions here
+            //TODO: set actions here
             case R.id.action_logout:
                 logoutUser();
                 break;
@@ -808,7 +820,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    public void openSearchBazaarActivity() {
+    public void openSearchBazaarActivity(String input) {
         final MaterialDialog dialog = new MaterialDialog.Builder(ChatActivity.this)
                 .title("Fetching Data")
                 .content("Loading latest listings from peers across the world")
@@ -818,6 +830,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dialog.show();
 
         final Intent intent = new Intent(ChatActivity.this, BazaarSearchActivity.class);
+        intent.putExtra("query", input);
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointOBSearch(),
                 new Response.Listener<String>() {

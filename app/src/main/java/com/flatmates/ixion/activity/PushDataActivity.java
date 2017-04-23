@@ -67,6 +67,7 @@ public class PushDataActivity extends AppCompatActivity {
 
     String lon_str, lat_str;
     Data data;
+    String image1 = "", image2 = "", image3 = "";
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRefUserData = database.getReference("UploadedProperties");
 
@@ -85,7 +86,6 @@ public class PushDataActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "onCreate: ", e);
         }
-
 
     }
 
@@ -108,7 +108,12 @@ public class PushDataActivity extends AppCompatActivity {
         data.setLon(lon_str);
         data.setLat(lat_str);
 
-        //TODO: Check for correct input before pushing
+        data.setPurl(image1);   //TODO set
+        data.setPurl1(image1);
+        data.setPurl1(image2);
+        data.setPurl1(image3);
+
+        //TODO: Check for correct images input before pushing
         if (!switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
                 && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")
                 && !etphone.getText().toString().equals("") && !etstate.getText().toString().equals("") &&
