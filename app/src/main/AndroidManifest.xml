@@ -52,9 +52,11 @@
         <activity
             android:name=".activity.PushDataActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
-        <activity android:name=".activity.helper.PrivacyPolicyActivity"
+        <activity
+            android:name=".activity.helper.PrivacyPolicyActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
-        <activity android:name=".activity.helper.AboutUsActivity"
+        <activity
+            android:name=".activity.helper.AboutUsActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
         <activity
             android:name=".activity.decentralized.BazaarSearchActivity"
@@ -74,7 +76,6 @@
         <activity
             android:name=".activity.helper.FeedBackActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
-
     </application>
 
 </manifest>

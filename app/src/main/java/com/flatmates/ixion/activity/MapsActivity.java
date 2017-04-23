@@ -91,8 +91,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    //TODO: show loading dialog to user until results are shown on map
-
     @BindView(R.id.fab_openbazaar_search)
     FloatingActionButton fabOBSearch;
 
@@ -1022,7 +1020,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         new MaterialDialog.Builder(MapsActivity.this)
-                                .title(R.string.enter_bhk_and_city)
+                                .title(getResources().getString(R.string.enter_bhk_and_city))
                                 .content("Formatted string: bhk, city")
                                 .input("2bhk, delhi", "", new MaterialDialog.InputCallback() {
                                     @Override
