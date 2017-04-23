@@ -43,7 +43,16 @@ public class BazaarSearchActivity extends AppCompatActivity {
 
 
     private List<BlockchainData> getBlockchainData() {
-        Cursor cursor = getContentResolver().query(BlockchainTable.CONTENT_URI, null, null, null, null);
+        String query = getIntent().getStringExtra("query");
+        Cursor cursor;
+        if (!query.equals(""))
+            cursor = getContentResolver().query(BlockchainTable.CONTENT_URI,
+                    null,
+                    "categories='" + query.toLowerCase().trim()+"'",
+                    null,
+                    null);
+        else
+            cursor = getContentResolver().query(BlockchainTable.CONTENT_URI, null, null, null, null);
         return BlockchainTable.getRows(cursor, true);
     }
 

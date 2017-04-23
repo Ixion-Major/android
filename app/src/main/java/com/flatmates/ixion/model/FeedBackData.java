@@ -6,7 +6,7 @@ package com.flatmates.ixion.model;
 
 public class FeedBackData {
 
-    String title, description;
+    private String title, description;
 
     public String getDescription() {
         return description;

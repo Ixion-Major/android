@@ -61,6 +61,7 @@
     <string name="property_contract">Contract</string>
     <string name="pay">Buy</string>
     <string name="transfer_money">Transfer money to buy</string>
+    <string name="enter_bhk_and_city">Enter BHK and city</string>
 
     <string name="title">Title</string>
     <string name="description">Description</string>

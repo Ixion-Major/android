@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -115,7 +116,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected LocationRequest mLocationRequest;
     MaterialDialog placesDialog;
 
-    // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -266,8 +266,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions().position(apna).title("You are here")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         } else {
-//            Toast.makeText(this, "Current location not available. Fetching previous location.",
-//                    Toast.LENGTH_SHORT).show();
             latitude = 28.567333;
             longitude = 77.318373;  //TODO: set to college location
         }
@@ -414,6 +412,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             final String mobile = data.getMobile();
                             final String address = data.getAddress();
                             final String image = data.getPurl();
+                            final String image1 = data.getPurl1();
+                            final String image2 = data.getPurl2();
+                            final String image3 = data.getPurl3();
+                            //TODO set images
 
                             new MaterialDialog.Builder(MapsActivity.this)
                                     .title(name.toUpperCase())
@@ -489,6 +491,164 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
 
         final Intent intent = new Intent(MapsActivity.this, BazaarSearchActivity.class);
+        intent.putExtra("query", "");
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Endpoints.endpointOBSearch(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: " + response);
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            JSONArray array = jsonResponse.getJSONArray("hits");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                String objectID = object.getString("objectID");
+                                Log.i(TAG, "onResponse: objectID: " + objectID);
+
+                                String contractID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getString("contract_id");
+                                Log.i(TAG, "onResponse: contract_id: " + contractID);
+
+                                String GUID = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("id")
+                                        .getString("guid");
+                                Log.i(TAG, "onResponse: guid: " + GUID);
+
+                                String title = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("title");
+                                Log.i(TAG, "onResponse: title: " + title);
+
+                                String description = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("description");
+                                Log.i(TAG, "onResponse: desc: " + description);
+
+                                String price = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("price");
+                                String currency = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONObject("price_per_unit")
+                                        .getJSONObject("fiat").getString("currency_code");
+                                Log.i(TAG, "onResponse: price: " + price + " " + currency);
+
+                                String imageHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getJSONArray("image_hashes").getString(0);
+                                Log.i(TAG, "onResponse: imageHash: " + imageHash);
+
+                                String vendorName = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("name");
+                                Log.i(TAG, "onResponse: vendor name: " + vendorName);
+
+                                String vendorHeaderHash = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("header_hash");
+                                Log.i(TAG, "onResponse: vendor header hash: " + vendorHeaderHash);
+                                String vendorLocation = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("vendor")
+                                        .getString("location");
+                                Log.i(TAG, "onResponse: vendor location: " + vendorLocation);
+                                String categories = object.getJSONObject("vendor_offer")
+                                        .getJSONObject("listing")
+                                        .getJSONObject("item")
+                                        .getString("category");
+                                Log.i(TAG, "onResponse: categories: " + categories);
+
+                                BlockchainData data = new BlockchainData();
+                                data.setGUID(GUID);
+                                data.setContractID(contractID);
+                                data.setDescription(description);
+                                data.setImageHash(imageHash);
+                                data.setObjectID(objectID);
+                                data.setPrice(price);
+                                data.setTitle(title);
+                                data.setVendorHeaderHash(vendorHeaderHash);
+                                data.setVendorLocation(vendorLocation);
+                                data.setVendorName(vendorName);
+                                data.setCurrency(currency);
+                                data.setCategories(categories);
+                                data.setContract(object.toString());
+
+                                try {
+                                    getContentResolver().insert(BlockchainTable.CONTENT_URI,
+                                            BlockchainTable.getContentValues(data, true));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: ", error);
+                        dialog.dismiss();
+                        new MaterialDialog.Builder(MapsActivity.this)
+                                .title("Something went wrong")
+                                .content("Couldn't fetch data from the Blockchain")
+                                .progress(true, 0)
+                                .cancelable(false)
+                                .build()
+                                .show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("token", Endpoints.SEARCH_TOKEN);
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("q", "ixion");    //TODO: think about this
+                return params;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        InitApplication.getInstance().addToQueue(request);
+    }
+
+
+    public void openSearchBazaarActivity(String input) {
+        final MaterialDialog dialog = new MaterialDialog.Builder(MapsActivity.this)
+                .title("Fetching Data")
+                .content("Loading latest listings from peers across the world")
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
+        dialog.show();
+
+        if (input == null)
+            input = "";
+
+        final Intent intent = new Intent(MapsActivity.this, BazaarSearchActivity.class);
+        intent.putExtra("query", input);
         StringRequest request = new StringRequest(Request.Method.POST,
                 Endpoints.endpointOBSearch(),
                 new Response.Listener<String>() {
@@ -861,7 +1021,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        openSearchBazaarActivity();
+                        new MaterialDialog.Builder(MapsActivity.this)
+                                .title(R.string.enter_bhk_and_city)
+                                .content("Formatted string: bhk, city")
+                                .input("2bhk, delhi", "", new MaterialDialog.InputCallback() {
+                                    @Override
+                                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                        openSearchBazaarActivity(input.toString());
+                                    }
+                                })
+                                .show();
                     }
                 })
                 .negativeText("GO BACK")

@@ -7,28 +7,24 @@ package com.flatmates.ixion.model;
 
 public class Data {
 
-    String lat;
-    String lon;
-    String area;
-    String bhk;
-    String city;
-    String rent;
-    String state;
-    String name;
-    String email;
-    String address;
-    String mobile;
-    String purl;
+    private String lat;
+    private String lon;
+    private String area;
+    private String bhk;
+    private String city;
+    private String rent;
+    private String state;
+    private String name;
+    private String email;
+    private String address;
+    private String mobile;
+    private String purl;
+    private String purl1;
+    private String purl2;
+    private String purl3;
 
-    public String getPurl() {
-        return purl;
-    }
 
-    public void setPurl(String purl) {
-        this.purl = purl;
-    }
-
-    public Data(){
+    public Data() {
     }
 
     public String getName() {
@@ -117,6 +113,38 @@ public class Data {
 
     public void setLon(String lon) {
         this.lon = lon;
+    }
+
+    public String getPurl() {
+        return purl;
+    }
+
+    public void setPurl(String purl) {
+        this.purl = purl;
+    }
+
+    public String getPurl1() {
+        return purl1;
+    }
+
+    public void setPurl1(String purl1) {
+        this.purl1 = purl1;
+    }
+
+    public String getPurl2() {
+        return purl2;
+    }
+
+    public void setPurl2(String purl2) {
+        this.purl2 = purl2;
+    }
+
+    public String getPurl3() {
+        return purl3;
+    }
+
+    public void setPurl3(String purl3) {
+        this.purl3 = purl3;
     }
 
 }
