@@ -66,4 +66,8 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="submit">Submit</string>
+
+    <string name="credits">Gurpreet Singh (01813202713)\nManpreet Singh (01913202713)\nHarpreet Singh (05713202713)\nDamanpreet Singh (05813202713)</string>
+    <string name="privacy">Flatmate initially helps users to search their house according to their requiremnets with a hassle-free user interface. All the data is scraped from different house listing websites.\nUsers can list house by filling some information. All the information is secured.\nUsers can list house in blockchain and create a contract as a proof of statement.\n\nFlatmate is an open source project.</string>
+
 </resources>
