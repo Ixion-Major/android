@@ -45,6 +45,7 @@ import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
 import com.flatmates.ixion.activity.PushDataActivity;
 import com.flatmates.ixion.activity.helper.AboutUsActivity;
+import com.flatmates.ixion.activity.helper.FeedBackActivity;
 import com.flatmates.ixion.activity.helper.PrivacyPolicyActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.model.BlockchainTable;
@@ -769,6 +770,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 break;
             case R.id.nav_privacy_policy:
                 startActivity(new Intent(ChatActivity.this, PrivacyPolicyActivity.class));
+                break;
+            case R.id.nav_feed_back:
+                startActivity(new Intent(ChatActivity.this, FeedBackActivity.class));
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
