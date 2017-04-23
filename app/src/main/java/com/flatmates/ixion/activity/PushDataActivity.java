@@ -1,8 +1,14 @@
 package com.flatmates.ixion.activity;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +27,17 @@ import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.model.Data;
 import com.flatmates.ixion.utils.Endpoints;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +53,8 @@ public class PushDataActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_submit)
     Button buttonSubmit;
+    @BindView(R.id.btn_upload_image)
+    Button buttonUploadImage;
     @BindView(R.id.switch_upload_decentralised)
     Switch switchUploadDecentralised;
     @BindView(R.id.EditText_Name)
@@ -72,6 +87,13 @@ public class PushDataActivity extends AppCompatActivity {
 
     private static final String TAG = PushDataActivity.class.getSimpleName();
 
+    private StorageReference storageReference;
+
+    private static final int PICK_IMAGE_REQUEST = 234;
+
+    private Uri filePath;
+    private Uri firebaseUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +101,7 @@ public class PushDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_push_data);
         ButterKnife.bind(this);
         setTitle("List Property");
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -87,6 +110,79 @@ public class PushDataActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    @OnClick(R.id.btn_upload_image)
+    public void uploadImage() {
+        showFileChooser();
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    //handling the image chooser activity result
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            uploadFile();
+        }
+    }
+
+    private void uploadFile() {
+        if (filePath != null) {
+            //displaying a progress dialog while upload is going on
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            StorageReference riversRef = storageReference.child("images/pic.jpg");
+            riversRef.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //if the upload is successfull
+                            firebaseUri = taskSnapshot.getDownloadUrl();
+                            buttonUploadImage.setText("Image Uploaded");
+
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying a success toast
+                            Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //if the upload is not successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying error message
+                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+                        }
+                    });
+        }
+        //if there is not any file
+        else {
+            //you can display an error toast
+        }
     }
 
 
@@ -107,6 +203,7 @@ public class PushDataActivity extends AppCompatActivity {
         getLocationFromAddress(address);
         data.setLon(lon_str);
         data.setLat(lat_str);
+        data.setPurl(firebaseUri.toString());
 
         //TODO: Check for correct input before pushing
         if (!switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
@@ -127,6 +224,7 @@ public class PushDataActivity extends AppCompatActivity {
             etcity.setText("");
             etstate.setText("");
             etrent.setText("");
+            buttonUploadImage.setText("Upload Image");
         } else {
             if (switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
                     && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")
