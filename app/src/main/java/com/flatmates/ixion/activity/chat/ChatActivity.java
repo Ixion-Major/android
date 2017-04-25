@@ -28,7 +28,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -136,6 +135,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         preferences = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
 
+        sendBlankRequest();
         showPreviousConversation();
 
         navigationView.setNavigationItemSelectedListener(this);
@@ -202,6 +202,46 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 //        }
 
+    }
+
+    private void sendBlankRequest() {
+        final String input = "hi";
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Endpoints.endpointChatbot(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String serverResponse) {
+                        Log.i(TAG, "onResponse: " + serverResponse);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: ", error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("token", Endpoints.AUTH_TOKEN);
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("user_message", input.toLowerCase());
+                return params;
+            }
+
+        };
+
+        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        InitApplication.getInstance().addToQueue(request,
+                Constants.REQUEST_SEND_SPEECH_INPUT_TO_SERVER);
     }
 
 

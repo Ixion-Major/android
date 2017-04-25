@@ -7,8 +7,9 @@ package com.flatmates.ixion.utils;
 public class Endpoints {
 
     //https://ixion-backend-python1049.herokuapp.com
+    //http://778a8ad9.ngrok.io
 
-    private static final String BASE_URL = "http://778a8ad9.ngrok.io";
+    private static final String BASE_URL = "https://ixion-backend-python1049.herokuapp.com";
     public static final String AUTH_TOKEN = "jbfsj32094bsjab0*)&*)&)*&3bkdsjs&*&kbdk";
     public static final String SEARCH_TOKEN = "jdf34bj#*&$bcj[kbb>?H)U(#*)QBjbsf&*372";
     private static final String NGROK_BASE_URL = "https://4f72eaf8.ngrok.io";    //TODO: set
@@ -66,8 +67,8 @@ public class Endpoints {
         return NGROK_BASE_URL + "/api/v1/get_image?guid=" + guid + "&hash=" + hash;
     }
 
-    public static String endpointPurchaseContract(){
-        return NGROK_BASE_URL+"/api/v1/purchase_contract";
+    public static String endpointPurchaseContract() {
+        return NGROK_BASE_URL + "/api/v1/purchase_contract";
     }
 
 }
