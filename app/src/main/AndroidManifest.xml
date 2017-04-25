@@ -76,6 +76,9 @@
         <activity
             android:name=".activity.helper.FeedBackActivity"
             android:parentActivityName=".activity.chat.ChatActivity" />
+        <activity android:name=".activity.ui.FullImageActivity"
+            android:parentActivityName=".activity.DetailsActivity">
+        </activity>
     </application>
 
 </manifest>
