@@ -756,7 +756,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         .input("2bhk, delhi", "", new MaterialDialog.InputCallback() {
                             @Override
                             public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                openSearchBazaarActivity(input.toString());
+                                openSearchBazaarActivity(String.valueOf(input));
                             }
                         })
                         .show();

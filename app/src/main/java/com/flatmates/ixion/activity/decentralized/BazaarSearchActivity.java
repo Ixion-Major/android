@@ -20,6 +20,7 @@ public class BazaarSearchActivity extends AppCompatActivity {
 
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
+    private String query = "";
 
     private static final String TAG = BazaarSearchActivity.class.getSimpleName();
 
@@ -29,6 +30,10 @@ public class BazaarSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bazaar_search);
         ButterKnife.bind(this);
+        query = getIntent().getStringExtra("query");
+        if(query == null){
+            query = "";
+        }
     }
 
 
@@ -43,12 +48,11 @@ public class BazaarSearchActivity extends AppCompatActivity {
 
 
     private List<BlockchainData> getBlockchainData() {
-        String query = getIntent().getStringExtra("query");
         Cursor cursor;
-        if (!query.equals(""))
+        if (!query.isEmpty())
             cursor = getContentResolver().query(BlockchainTable.CONTENT_URI,
                     null,
-                    "categories='" + query.toLowerCase().trim()+"'",
+                    "categories='" + query.toLowerCase().trim() + "'",
                     null,
                     null);
         else
