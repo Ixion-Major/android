@@ -80,6 +80,9 @@ import static com.flatmates.ixion.utils.Constants.KEY_BUNDLE;
 import static com.flatmates.ixion.utils.Constants.KEY_CITY;
 import static com.flatmates.ixion.utils.Constants.KEY_EMAIL;
 import static com.flatmates.ixion.utils.Constants.KEY_IMAGE;
+import static com.flatmates.ixion.utils.Constants.KEY_IMAGE1;
+import static com.flatmates.ixion.utils.Constants.KEY_IMAGE2;
+import static com.flatmates.ixion.utils.Constants.KEY_IMAGE3;
 import static com.flatmates.ixion.utils.Constants.KEY_MOBILE;
 import static com.flatmates.ixion.utils.Constants.KEY_NAME;
 import static com.flatmates.ixion.utils.Constants.KEY_RENT;
@@ -458,6 +461,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             bundle.putString(KEY_EMAIL, email);
                                             bundle.putString(KEY_RENT, rent);
                                             bundle.putString(KEY_IMAGE, image);
+                                            bundle.putString(KEY_IMAGE1, image);
+                                            bundle.putString(KEY_IMAGE2, image2);
+                                            bundle.putString(KEY_IMAGE3, image3);
                                             Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
                                             intent.putExtra(KEY_BUNDLE, bundle);
                                             startActivity(intent);
@@ -805,7 +811,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.home_icon)));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 14.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 11.0f));
         materialDialog.dismiss();
     }
 

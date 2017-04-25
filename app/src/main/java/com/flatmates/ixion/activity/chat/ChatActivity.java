@@ -319,6 +319,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void showUserInputBubble(final String input) {
         Button userMessage = new Button(ChatActivity.this);
         userMessage.setText(input);
+        userMessage.setTransformationMethod(null);
         userMessage.setGravity(Gravity.START);
         userMessage.setTextSize(16);
         userMessage.setTextColor(getResources().getColor(android.R.color.white));
@@ -499,7 +500,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             serverMessageButton.setBackground(getResources()
                     .getDrawable(R.drawable.incoming_message_bubble));
             LinearLayout.LayoutParams llp =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.MATCH_PARENT);
             llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
             llp.gravity = Gravity.START;
@@ -530,6 +531,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 serverMessage.setText(message);
             else
                 serverMessage.setText(preferenceMessage);
+            serverMessage.setTransformationMethod(null);
             serverMessage.setGravity(Gravity.START);
             serverMessage.setTextSize(16);
             serverMessage.setPadding(80, 20, 20, 20);
@@ -976,4 +978,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         InitApplication.getInstance().addToQueue(request);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        buttonShowResults.setVisibility(GONE);
+    }
 }

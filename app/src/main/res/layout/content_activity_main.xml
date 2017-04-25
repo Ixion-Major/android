@@ -8,6 +8,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/chat_background"
         android:orientation="vertical">
 
         <ScrollView
@@ -21,7 +22,7 @@
                 android:id="@+id/message_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/margin_8dp"
                 android:paddingBottom="@dimen/activity_horizontal_margin"
                 android:orientation="vertical" />
         </ScrollView>
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="@dimen/margin_medium"
+            android:textColor="@android:color/white"
             android:text="@string/search_property"
             android:visibility="gone" />
 
