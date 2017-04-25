@@ -49,6 +49,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,6 +91,7 @@ public class BCDetailActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle mDrawerToggle;
     BlockchainData data;
+    String images;
 
     private static final String TAG = BCDetailActivity.class.getSimpleName();
 
@@ -100,6 +102,7 @@ public class BCDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bcdetail);
         ButterKnife.bind(this);
         data = getIntent().getParcelableExtra(KEY_BC_ITEM);
+        images = getIntent().getStringExtra("image");
     }
 
 
@@ -108,9 +111,7 @@ public class BCDetailActivity extends AppCompatActivity {
         super.onStart();
 
         Glide.with(this)
-                .load(Endpoints.endpointFetchImage(
-                        data.getGUID(),
-                        data.getImageHash()))
+                .load(images)
                 .override(720, 480)
                 .fitCenter()
                 .error(getResources().getDrawable(R.drawable.placeholder))
