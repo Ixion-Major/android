@@ -1,26 +1,21 @@
 package com.flatmates.ixion.activity.decentralized;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Handler;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.graphics.Palette;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -39,10 +34,6 @@ import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.utils.Endpoints;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,8 +46,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.view.View.FOCUS_LEFT;
-import static android.view.View.GONE;
 import static com.flatmates.ixion.utils.Constants.KEY_BC_ITEM;
 
 public class BCDetailActivity extends AppCompatActivity {
@@ -105,6 +94,9 @@ public class BCDetailActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        Log.d(TAG, "onStart: image: " + Endpoints.endpointFetchImage(
+                data.getGUID(),
+                data.getImageHash()));
         Glide.with(this)
                 .load(Endpoints.endpointFetchImage(
                         data.getGUID(),
@@ -112,11 +104,12 @@ public class BCDetailActivity extends AppCompatActivity {
                 .override(720, 480)
                 .fitCenter()
                 .error(getResources().getDrawable(R.drawable.placeholder))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .dontAnimate()
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
+                                               boolean isFirstResource) {
                         return false;
                     }
 

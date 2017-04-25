@@ -6,7 +6,9 @@ package com.flatmates.ixion.utils;
 
 public class Endpoints {
 
-    private static final String BASE_URL = "https://ixion-backend-python1049.herokuapp.com";
+    //https://ixion-backend-python1049.herokuapp.com
+
+    private static final String BASE_URL = "http://778a8ad9.ngrok.io";
     public static final String AUTH_TOKEN = "jbfsj32094bsjab0*)&*)&)*&3bkdsjs&*&kbdk";
     public static final String SEARCH_TOKEN = "jdf34bj#*&$bcj[kbb>?H)U(#*)QBjbsf&*372";
     private static final String NGROK_BASE_URL = "https://4f72eaf8.ngrok.io";    //TODO: set

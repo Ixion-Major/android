@@ -40,6 +40,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.NodeSetupActivity;
 import com.flatmates.ixion.activity.decentralized.BazaarSearchActivity;
 import com.flatmates.ixion.activity.LoginActivity;
 import com.flatmates.ixion.activity.MapsActivity;
@@ -481,7 +482,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
-    //TODO: setup this method on long click or some other event
     private void speakOut(final String textToSpeak) {
         tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
     }
@@ -489,7 +489,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void showServerResponseBubble(String serverResponse) {
         if (serverResponse.equals("Hi! How may I help you?") && messageView.getChildCount() == 0) {
-            Button serverMessageButton = new Button(ChatActivity.this);
+            final Button serverMessageButton = new Button(ChatActivity.this);
             serverMessageButton.setGravity(Gravity.START);
             serverMessageButton.setText("Hi! How may I help you?");
             serverMessageButton.setTextSize(16);
@@ -505,6 +505,12 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             llp.gravity = Gravity.START;
             serverMessageButton.setLayoutParams(llp);
             messageView.addView(serverMessageButton, 0);
+            serverMessageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    speakOut(serverMessageButton.getText().toString());
+                }
+            });
         } else {
             String message = "";
             String area, city, state, bedrooms, budget;
@@ -524,25 +530,31 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 e.printStackTrace();
             }
 
-            Button serverMessage = new Button(ChatActivity.this);
+            final Button serverMessageButton = new Button(ChatActivity.this);
             String preferenceMessage = getFromPreferences();
             if (!message.equals(""))
-                serverMessage.setText(message);
+                serverMessageButton.setText(message);
             else
-                serverMessage.setText(preferenceMessage);
-            serverMessage.setGravity(Gravity.START);
-            serverMessage.setTextSize(16);
-            serverMessage.setPadding(80, 20, 20, 20);
-            serverMessage.setTextColor(getResources().getColor(android.R.color.white));
-            serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
+                serverMessageButton.setText(preferenceMessage);
+            serverMessageButton.setGravity(Gravity.START);
+            serverMessageButton.setTextSize(16);
+            serverMessageButton.setPadding(80, 20, 20, 20);
+            serverMessageButton.setTextColor(getResources().getColor(android.R.color.white));
+            serverMessageButton.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
             LinearLayout.LayoutParams llp =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.MATCH_PARENT);
             llp.setMargins(0, 10, 150, 10); // llp.setMargins(left, top, right, bottom);
             llp.gravity = Gravity.START;
-            serverMessage.setLayoutParams(llp);
+            serverMessageButton.setLayoutParams(llp);
 
-            messageView.addView(serverMessage);
+            messageView.addView(serverMessageButton);
+            serverMessageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    speakOut(serverMessageButton.getText().toString());
+                }
+            });
         }
     }
 
@@ -558,15 +570,15 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         try {
             if (city != null && !city.equals(""))
-                response += city + " ";
+                response += city + "\n";
             if (budget != null && !budget.equals(""))
-                response += budget + " ";
+                response += budget + "\n";
             if (bedrooms != null && !bedrooms.equals(""))
-                response += bedrooms + " ";
+                response += bedrooms + "\n";
             if (area != null && !area.equals(""))
-                response += area + " ";
+                response += area + "\n";
             if (state != null && !state.equals(""))
-                response += state + " ";
+                response += state + "\n";
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -574,7 +586,8 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return "Finding properties as per requirements:\n" + response.trim()
                 .replace("null", "")
                 .replace(" +", " ") +
-                " near you.\n\nAdd more filters or search?";
+                "\n\n" +
+                "Search or Add more filters?";
     }
 
 
@@ -764,6 +777,9 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             //TODO: set actions here
             case R.id.action_logout:
                 logoutUser();
+                break;
+            case R.id.nav_node_details:
+                startActivity(new Intent(ChatActivity.this, NodeSetupActivity.class));
                 break;
             case R.id.nav_about_us:
                 startActivity(new Intent(ChatActivity.this, AboutUsActivity.class));
