@@ -31,6 +31,9 @@ public class Constants {
     public static final String KEY_ADDRESS = "address";
     public static final String KEY_RENT = "rent";
     public static final String KEY_IMAGE = "image";
+    public static final String KEY_IMAGE1 = "image1";
+    public static final String KEY_IMAGE2 = "image2";
+    public static final String KEY_IMAGE3 = "image3";
 
 
     public static final String KEY_BC_ITEM = "blockchain item";
