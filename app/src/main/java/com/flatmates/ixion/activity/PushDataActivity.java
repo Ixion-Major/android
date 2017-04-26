@@ -2,11 +2,13 @@ package com.flatmates.ixion.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.chat.UserChatActivity;
 import com.flatmates.ixion.model.Data;
 import com.flatmates.ixion.utils.Endpoints;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,8 +38,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
+import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
+import com.nguyenhoanglam.imagepicker.model.Image;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +54,8 @@ import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.flatmates.ixion.utils.Constants.USER_EMAIL;
 
 
 public class PushDataActivity extends AppCompatActivity {
@@ -84,7 +93,7 @@ public class PushDataActivity extends AppCompatActivity {
     Data data;
     String image1 = "", image2 = "", image3 = "";
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRefUserData = database.getReference("UploadedProperties");
+    DatabaseReference myRefUserData = database.getReference("Data");
 
     private static final String TAG = PushDataActivity.class.getSimpleName();
 
@@ -92,8 +101,14 @@ public class PushDataActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 234;
 
+    private int REQUEST_CODE_PICKER = 2000;
+
     private Uri filePath;
-    private Uri firebaseUri;
+    private Uri firebaseUri = Uri.parse("");
+    private ArrayList<Image> images = new ArrayList<>();
+    SharedPreferences preferences;
+    private String userEmail;
+    private int check = 0;
 
 
     @Override
@@ -103,6 +118,10 @@ public class PushDataActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setTitle("List Property");
         storageReference = FirebaseStorage.getInstance().getReference();
+        preferences = PreferenceManager.getDefaultSharedPreferences(PushDataActivity.this);
+        userEmail = preferences.getString(USER_EMAIL, "").replace(".", "_@_");
+
+        data = new Data();
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -118,43 +137,79 @@ public class PushDataActivity extends AppCompatActivity {
     }
 
     private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
+        ImagePicker.create(this)
+                .imageTitle("Tap to select")
+                .multi()
+                .limit(3)
+                .start(REQUEST_CODE_PICKER);
     }
 
     //handling the image chooser activity result
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+//            filePath = data.getData();
+//            uploadFile();
+//        }
+//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            filePath = data.getData();
-            uploadFile();
+        if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+            images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+//            StringBuffer stringBuffer = new StringBuffer();
+            for (int i = 0, l = images.size(); i < l; i++) {
+                filePath = Uri.fromFile(new File(images.get(i).getPath()));
+                uploadFile(i);
+            }
+//            textView.setText(stringBuffer.toString());
         }
     }
 
-    private void uploadFile() {
+    private void uploadFile(final int count) {
         if (filePath != null) {
             //displaying a progress dialog while upload is going on
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
-            StorageReference riversRef = storageReference.child("images/pic.jpg");
+            StorageReference riversRef = storageReference.child(userEmail+ "/pic" + count + ".jpg");
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //if the upload is successfull
                             firebaseUri = taskSnapshot.getDownloadUrl();
-                            buttonUploadImage.setText("Image Uploaded");
+                            buttonUploadImage.setText("Images Uploaded");
+                            switch (count) {
+                                case 0:
+                                    data.setPurl(firebaseUri.toString());
+                                    data.setPurl1(firebaseUri.toString());
+                                    break;
+                                case 1:
+                                    data.setPurl2(firebaseUri.toString());
+                                    break;
+                                case 2:
+                                    data.setPurl3(firebaseUri.toString());
+                                    Toast.makeText(PushDataActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                                    check = 1;
+                                    break;
+                                default:
+                                    System.out.println("default");
+                            }
 
                             //hiding the progress dialog
                             progressDialog.dismiss();
-
                             //and displaying a success toast
-                            Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                            if(check == 1)
+                                Toast.makeText(PushDataActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -188,15 +243,14 @@ public class PushDataActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_submit)
     public void pushToFirebase() {
-        data = new Data();
         data.setName(etname.getText().toString().trim());
         data.setEmail(etemail.getText().toString().trim());
         data.setMobile(etphone.getText().toString().trim());
         data.setAddress(etaddress.getText().toString().trim());
         data.setRent(etrent.getText().toString().trim());
-        data.setCity(etcity.getText().toString().trim());
-        data.setArea(etarea.getText().toString().trim());
-        data.setState(etstate.getText().toString().trim());
+        data.setCity(etcity.getText().toString().toLowerCase().trim());
+        data.setArea(etarea.getText().toString().toLowerCase().trim());
+        data.setState(etstate.getText().toString().toLowerCase().trim());
         data.setBhk(etbhk.getText().toString() + "bhk");
         String address = etaddress.getText().toString() + "," + etarea.getText().toString() + ", " + etcity.getText().toString()
                 + ", " + etstate.getText().toString();
@@ -205,17 +259,12 @@ public class PushDataActivity extends AppCompatActivity {
         data.setLat(lat_str);
         data.setPurl(firebaseUri.toString());
 
-        data.setPurl(image1);   //TODO set
-        data.setPurl1(image1);
-        data.setPurl1(image2);
-        data.setPurl1(image3);
-
         //TODO: Check for correct images input before pushing
         if (!switchUploadDecentralised.isChecked() && !etTitle.getText().toString().equals("")
                 && !etDescription.getText().toString().equals("") && !etbhk.getText().toString().equals("")
                 && !etphone.getText().toString().equals("") && !etstate.getText().toString().equals("") &&
                 !etarea.getText().toString().equals("") && !etcity.getText().toString().equals("") &&
-                !etrent.getText().toString().equals("") && !etname.getText().toString().equals("")) {
+                !etrent.getText().toString().equals("") && !etname.getText().toString().equals("") && check==1) {
             myRefUserData.push().setValue(data);
             Toast.makeText(this, "Property Listed!", Toast.LENGTH_SHORT).show();
             etname.setText("");
@@ -320,9 +369,6 @@ public class PushDataActivity extends AppCompatActivity {
             lat_str = String.valueOf(location.getLatitude());
 
             lon_str = String.valueOf(location.getLongitude());
-
-            Toast.makeText(this, lat_str + " , " + lon_str, Toast.LENGTH_SHORT).show();
-            System.out.println(lat_str + " , " + lon_str);
 
         } catch (Exception e) {
             e.printStackTrace();

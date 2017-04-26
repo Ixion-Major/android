@@ -1,5 +1,6 @@
 package com.flatmates.ixion.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -19,6 +20,7 @@ import com.flatmates.ixion.activity.decentralized.BCDetailActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.utils.Endpoints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,13 +37,15 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
 
     private Context context;
     private List<BlockchainData> dataArrayList;
+    private ArrayList<String> images;
 
     private static final String TAG = BazaarDataAdapter.class.getSimpleName();
 
 
-    public BazaarDataAdapter(Context context, List<BlockchainData> dataArrayList) {
+    public BazaarDataAdapter(Context context, List<BlockchainData> dataArrayList, ArrayList<String> images) {
         this.context = context;
         this.dataArrayList = dataArrayList;
+        this.images = images;
     }
 
 
@@ -54,16 +58,14 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
 
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.textviewOwner.setText(dataArrayList.get(holder.getAdapterPosition()).getVendorName());
         holder.textviewDescription.setText(dataArrayList.get(holder.getAdapterPosition()).getDescription());
         holder.textviewPrice.setText(dataArrayList.get(holder.getAdapterPosition()).getCurrency() + " " +
                 dataArrayList.get(holder.getAdapterPosition()).getPrice());
         holder.textviewTitle.setText(dataArrayList.get(holder.getAdapterPosition()).getTitle());
         Glide.with(context)
-                .load(Endpoints.endpointFetchImage(
-                        dataArrayList.get(holder.getAdapterPosition()).getGUID(),
-                        dataArrayList.get(holder.getAdapterPosition()).getImageHash()))
+                .load(images.get(position))
                 .error(context.getResources().getDrawable(R.drawable.placeholder))
                 .fitCenter()
                 .into(holder.imageviewProperty);
@@ -72,6 +74,7 @@ public class BazaarDataAdapter extends RecyclerView.Adapter<BazaarDataAdapter.My
             public void onClick(View v) {
                 Intent intent = new Intent(context, BCDetailActivity.class);
                 intent.putExtra(KEY_BC_ITEM, dataArrayList.get(holder.getAdapterPosition()));
+                intent.putExtra("image", images.get(position));
                 context.startActivity(intent);
             }
         });
