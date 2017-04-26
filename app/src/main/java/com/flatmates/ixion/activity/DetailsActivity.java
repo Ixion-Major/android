@@ -120,7 +120,6 @@ public class DetailsActivity extends AppCompatActivity {
         txt_address.setText(fullAddress);
         txt_bhk.setText(bhk);
         txt_rent.setText(rent);
-//        txt_mobile.setText(mobile);
         txt_email.setText(email);
 
         Glide.with(this)
@@ -177,7 +176,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DetailsActivity.this, FullImageActivity.class);
-                intent.putExtra("image", image );
+                intent.putExtra("image", image2 );
                 ActivityOptionsCompat options = ActivityOptionsCompat.
                         makeSceneTransitionAnimation(DetailsActivity.this, (View)img_thumb2, "profile");
                 startActivity(intent, options.toBundle());
@@ -194,11 +193,10 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DetailsActivity.this, FullImageActivity.class);
-                intent.putExtra("image", image );
+                intent.putExtra("image", image3 );
                 ActivityOptionsCompat options = ActivityOptionsCompat.
                         makeSceneTransitionAnimation(DetailsActivity.this, (View)img_thumb3, "profile");
                 startActivity(intent, options.toBundle());
-
             }
         });
     }

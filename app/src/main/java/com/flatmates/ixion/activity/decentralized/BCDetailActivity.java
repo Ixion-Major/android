@@ -1,8 +1,10 @@
 package com.flatmates.ixion.activity.decentralized;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +36,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.flatmates.ixion.InitApplication;
 import com.flatmates.ixion.R;
+import com.flatmates.ixion.activity.DetailsActivity;
+import com.flatmates.ixion.activity.ui.FullImageActivity;
 import com.flatmates.ixion.model.BlockchainData;
 import com.flatmates.ixion.utils.Endpoints;
 
@@ -294,10 +298,9 @@ public class BCDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(navDrawer.isDrawerOpen(navDrawerList)) {
+                if (navDrawer.isDrawerOpen(navDrawerList)) {
                     navDrawer.closeDrawer(navDrawerList);
-                }
-                else {
+                } else {
                     navDrawer.openDrawer(navDrawerList);
                 }
                 return true;

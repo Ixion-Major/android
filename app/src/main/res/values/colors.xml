@@ -7,4 +7,5 @@
     <color name="secondaryText">#757575</color>
     <color name="colorPrimaryLight">#E1BEE7</color>
     <color name="colorDivider">#BDBDBD</color>
+    <color name="textColor">#424242</color>
 </resources>

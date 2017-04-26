@@ -84,7 +84,8 @@
 
         <activity
             android:name=".activity.ui.FullImageActivity"
-            android:parentActivityName=".activity.DetailsActivity" />
+            android:parentActivityName=".activity.DetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 

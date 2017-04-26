@@ -220,6 +220,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         Log.e(TAG, "onErrorResponse: ", error);
                     }
                 }) {
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> header = new HashMap<>();
@@ -286,6 +287,13 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void showResults() {
         clearRealmDB();
         messageView.removeAllViews();
+//        String email = preferences.getString(USER_EMAIL, "");
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.clear();
+//        editor.putString(USER_EMAIL, email);
+//        editor.putBoolean(IS_USER_LOGGED_IN, true);
+//        editor.apply();
+
         Bundle bundle = new Bundle();
         bundle.putString(KEY_MESSAGE, preferences.getString(KEY_MESSAGE, ""));
         bundle.putString(KEY_AREA, preferences.getString(KEY_AREA, null));
@@ -363,7 +371,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
         userMessage.setTransformationMethod(null);
         userMessage.setGravity(Gravity.START);
         userMessage.setTextSize(16);
-        userMessage.setTextColor(getResources().getColor(android.R.color.white));
+        userMessage.setTextColor(getResources().getColor(R.color.textColor));
         userMessage.setPadding(20, 20, 80, 20);
         userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
         LinearLayout.LayoutParams llp =
@@ -536,7 +544,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
             serverMessageButton.setTextSize(16);
             serverMessageButton.setPadding(80, 20, 20, 20);
             serverMessageButton.setTextColor(getResources()
-                    .getColor(android.R.color.white));
+                    .getColor(R.color.textColor));
             serverMessageButton.setBackground(getResources()
                     .getDrawable(R.drawable.incoming_message_bubble));
             LinearLayout.LayoutParams llp =
@@ -573,14 +581,21 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             final Button serverMessageButton = new Button(ChatActivity.this);
             String preferenceMessage = getFromPreferences();
-            if (!message.equals(""))
+            if (!message.equals("") &&
+                    !message.equals("Couldn't find anything matching query. Please try again")) {
                 serverMessageButton.setText(message);
-            else
+                buttonShowResults.setVisibility(View.VISIBLE);
+            } else if (message.equals("Couldn't find anything matching query. Please try again")) {
+                buttonShowResults.setVisibility(View.INVISIBLE);
+                serverMessageButton.setText(message);
+            } else {
                 serverMessageButton.setText(preferenceMessage);
+                buttonShowResults.setVisibility(View.VISIBLE);
+            }
             serverMessageButton.setGravity(Gravity.START);
             serverMessageButton.setTextSize(16);
             serverMessageButton.setPadding(80, 20, 20, 20);
-            serverMessageButton.setTextColor(getResources().getColor(android.R.color.white));
+            serverMessageButton.setTextColor(getResources().getColor(R.color.textColor));
             serverMessageButton.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
             LinearLayout.LayoutParams llp =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -622,6 +637,11 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 response += state + "\n";
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (response.equals("")) {
+            buttonShowResults.setVisibility(View.INVISIBLE);
+            return "Couldn't find anything matching query. Please try again";
         }
 
         return "Finding properties as per requirements:\n" + response.trim()
@@ -1007,8 +1027,6 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         new MaterialDialog.Builder(ChatActivity.this)
                                 .title("Something went wrong")
                                 .content("Couldn't fetch data from the Blockchain")
-                                .progress(true, 0)
-                                .cancelable(false)
                                 .build()
                                 .show();
                     }
@@ -1027,7 +1045,7 @@ public class ChatActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 return params;
             }
         };
-        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+        request.setRetryPolicy(new DefaultRetryPolicy(60 * 1000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         InitApplication.getInstance().addToQueue(request);

@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="@drawable/chat_background"
+    android:alpha="0.7"
     tools:context="com.flatmates.ixion.activity.chat.ChatActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,10 +20,10 @@
             android:layout_weight="1">
 
             <LinearLayout
+                android:id="@+id/chat_llayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:id="@+id/chat_llayout"
-                android:orientation="vertical"/>
+                android:orientation="vertical" />
         </ScrollView>
 
         <Button

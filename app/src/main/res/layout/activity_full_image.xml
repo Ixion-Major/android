@@ -4,17 +4,20 @@
     android:id="@+id/activity_full_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:background="@android:color/black"
-    android:layout_margin="16dp"
+    android:gravity="center"
     tools:context="com.flatmates.ixion.activity.ui.FullImageActivity">
 
     <ImageView
         android:id="@+id/full_image"
-        android:transitionName="profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:transitionName="profile" />
 
 </RelativeLayout>

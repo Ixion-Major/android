@@ -268,7 +268,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         } else {
             latitude = 28.567333;
-            longitude = 77.318373;  //TODO: set to college location
+            longitude = 77.318373;
         }
     }
 
@@ -461,7 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             bundle.putString(KEY_EMAIL, email);
                                             bundle.putString(KEY_RENT, rent);
                                             bundle.putString(KEY_IMAGE, image);
-                                            bundle.putString(KEY_IMAGE1, image);
+                                            bundle.putString(KEY_IMAGE1, image1);
                                             bundle.putString(KEY_IMAGE2, image2);
                                             bundle.putString(KEY_IMAGE3, image3);
                                             Intent intent = new Intent(MapsActivity.this, DetailsActivity.class);
@@ -632,7 +632,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return params;
             }
         };
-        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000,
+        request.setRetryPolicy(new DefaultRetryPolicy(30 * 1000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         InitApplication.getInstance().addToQueue(request);
@@ -811,7 +811,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng apna = new LatLng(lati, loni);
         mMap.addMarker(new MarkerOptions().position(apna).title(name)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.home_icon)));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 11.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(apna, 12.5f));
         materialDialog.dismiss();
     }
 

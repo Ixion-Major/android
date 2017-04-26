@@ -165,7 +165,7 @@ public class UserChatActivity extends AppCompatActivity {
                         .setSmallIcon(R.drawable.ic_notif)
                         .setContentTitle("FlatMate")
                         .setContentText("New message received from " +
-                                getIntent().getStringExtra(KEY_EMAIL).replace(".", "_@_"));
+                                getIntent().getStringExtra(KEY_EMAIL).replace("_@_", "."));
         Intent resultIntent = new Intent(this, ChatActivity.class);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -190,12 +190,12 @@ public class UserChatActivity extends AppCompatActivity {
             String chatMsg = (String) ((DataSnapshot) i.next()).getValue();
 //            String chatUsername = ((String) ((DataSnapshot) i.next()).getValue()).split("@")[0];
             String chatUsername = ((String) ((DataSnapshot) i.next()).getValue());
-            textContract =  chatUsername + " :- " + chatMsg + "\n" + textContract;
+            textContract = chatUsername + " :- " + chatMsg + "\n" + textContract;
             if (chatUsername.equals(userEmail)) {
                 showUserInputBubble(chatMsg);
             } else
                 showServerResponseBubble(chatMsg);
-                et.setText("");
+            et.setText("");
         }
     }
 
@@ -205,7 +205,7 @@ public class UserChatActivity extends AppCompatActivity {
         userMessage.setText(input);
         userMessage.setGravity(Gravity.START);
         userMessage.setTextSize(16);
-        userMessage.setTextColor(getResources().getColor(android.R.color.white));
+        userMessage.setTextColor(getResources().getColor(R.color.textColor));
         userMessage.setPadding(20, 20, 40, 20);
         userMessage.setBackground(getResources().getDrawable(R.drawable.outgoing_message_bubble));
         LinearLayout.LayoutParams llp =
@@ -225,7 +225,7 @@ public class UserChatActivity extends AppCompatActivity {
         serverMessage.setGravity(Gravity.START);
         serverMessage.setTextSize(16);
         serverMessage.setPadding(60, 20, 20, 20);
-        serverMessage.setTextColor(getResources().getColor(android.R.color.white));
+        serverMessage.setTextColor(getResources().getColor(R.color.textColor));
         serverMessage.setBackground(getResources().getDrawable(R.drawable.incoming_message_bubble));
         LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -236,7 +236,6 @@ public class UserChatActivity extends AppCompatActivity {
 
         linearLayout.addView(serverMessage);
     }
-
 
 
     @Override
